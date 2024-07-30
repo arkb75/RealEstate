@@ -6,10 +6,11 @@ DROP TABLE TownHouses;
 DROP TABLE Condos;
 DROP TABLE Apartments;
 DROP TABLE Properties;
+DROP TABLE APPOINTMENTS;
 DROP TABLE Realtors;
 DROP TABLE Users;
 DROP TABLE Amenities;
-DROP TABLE IF EXISTS APPOINTMENTS;
+
 
 -- Create all tables for the DB
 
@@ -35,17 +36,17 @@ CREATE TABLE Realtors (
 
 -- Creating the Appointments table
 CREATE TABLE Appointments (
-                          AppointmentID INTEGER NOT NULL,
-  	                      AppointmentStatus CHAR(9) NOT NULL,
-                          AppointmentDate CHAR(10) NOT NULL,
-                          AppointmentTime CHAR(5) NOT NULL,
-                          BuyerEmail VARCHAR(255) NOT NULL,
-                          RealtorID INTEGER NOT NULL,
-                          MeetingPlace VARCHAR(255) Not NULL,
-  	                      PRIMARY KEY (AppointmentID),
-  	                      UNIQUE (RealtorID, AppointmentDate, AppointmentTime, BuyerEmail),
-                          FOREIGN KEY (RealtorID) REFERENCES Realtors(RealtorID),
-                          FOREIGN KEY (BuyerEmail) REFERENCES Realtors(BuyerEmail)
+                              AppointmentID INTEGER NOT NULL,
+                              AppointmentStatus CHAR(9) NOT NULL,
+                              AppointmentDate CHAR(10) NOT NULL,
+                              AppointmentTime CHAR(5) NOT NULL,
+                              BuyerEmail VARCHAR(255) NOT NULL,
+                              RealtorID INTEGER NOT NULL,
+                              MeetingPlace VARCHAR(255) Not NULL,
+                              PRIMARY KEY (AppointmentID),
+                              UNIQUE (RealtorID, AppointmentDate, AppointmentTime, BuyerEmail),
+                              FOREIGN KEY (RealtorID) REFERENCES Realtors(RealtorID),
+                              FOREIGN KEY (BuyerEmail) REFERENCES Users
 );
 
 CREATE TABLE PROPERTIES (
@@ -199,22 +200,22 @@ VALUES
 
 INSERT INTO Appointments (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, RealtorID, AppointmentStatus)
 VALUES
-(1, '2024-03-05', '10:00', '123 Elm St', 'samjane@hotmail.com', 1, 'Scheduled');
+    (1, '2024-03-05', '10:00', '123 Elm St', 'samjane@hotmail.com', 1, 'Scheduled');
 INSERT INTO Appointments (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, RealtorID, AppointmentStatus)
 VALUES
-(2, '2024-04-05', '14:00', '456 Oak St', 'georgewash@laundry.com', 2, 'Completed');
+    (2, '2024-04-05', '14:00', '456 Oak St', 'georgewash@laundry.com', 2, 'Completed');
 INSERT INTO Appointments (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, RealtorID, AppointmentStatus)
 VALUES
-(3, '2024-05-10', '11:00', '789 Pine St', 'willsmith@alaadin.com', 3, 'Scheduled');
+    (3, '2024-05-10', '11:00', '789 Pine St', 'willsmith@alaadin.com', 3, 'Scheduled');
 INSERT INTO Appointments (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, RealtorID, AppointmentStatus)
 VALUES
-(4, '2024-06-10', '15:00', '321 Maple St', 'sundarpichai@gmail.com', 4, 'Cancelled');
+    (4, '2024-06-10', '15:00', '321 Maple St', 'sundarpichai@gmail.com', 4, 'Cancelled');
 INSERT INTO Appointments (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, RealtorID, AppointmentStatus)
 VALUES
-(5, '2024-07-15', '09:00', '654 Birch St', 'brettlee@rediffmail.com', 5, 'Scheduled');
+    (5, '2024-07-15', '09:00', '654 Birch St', 'brettlee@rediffmail.com', 5, 'Scheduled');
 INSERT INTO Appointments (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, RealtorID, AppointmentStatus)
 VALUES
-(6, '2024-08-20', '13:00', '987 Cedar St', 'stevesmith@google.com', 6, 'Completed');
+    (6, '2024-08-20', '13:00', '987 Cedar St', 'stevesmith@google.com', 6, 'Completed');
 
 
 INSERT INTO PROPERTIES(Address, City, Province, PropertyType, PostalCode, PropertyCondition, NumBaths, NumBeds, YearBuilt, InteriorSpace)
