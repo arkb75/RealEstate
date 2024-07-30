@@ -11,7 +11,6 @@ DROP TABLE Users;
 DROP TABLE Amenities;
 DROP TABLE IF EXISTS APPOINTMENTS;
 
-
 -- Create all tables for the DB
 
 CREATE TABLE USERS (
