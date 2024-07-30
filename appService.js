@@ -78,7 +78,7 @@ async function testOracleConnection() {
 
 async function fetchDemotableFromDb() {
     return await withOracleDB(async (connection) => {
-        const result = await connection.execute('SELECT * FROM DEMOTABLE');
+        const result = await connection.execute('SELECT ListingID, Address, PostalCode, ListingPrice FROM LISTINGS');
         return result.rows;
     }).catch(() => {
         return [];

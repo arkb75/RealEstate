@@ -53,13 +53,15 @@ async function fetchAndDisplayUsers() {
         tableBody.innerHTML = '';
     }
 
-    demotableContent.forEach(user => {
+    demotableContent.forEach(listing => {
         const row = tableBody.insertRow();
-        user.forEach((field, index) => {
+        listing.forEach((field, index) => {
             const cell = row.insertCell(index);
             cell.textContent = field;
         });
     });
+
+
 }
 
 // This function resets or initializes the demotable.
