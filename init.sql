@@ -33,18 +33,20 @@ CREATE TABLE Realtors (
                           UNIQUE (Phone)
 );
 
-CREATE TABLE Apartments (
-                            Address VARCHAR(255) NOT NULL,
-                            City VARCHAR(255) NOT NULL,
-                            Province VARCHAR(255) NOT NULL,
-                            PostalCode CHAR(6) NOT NULL,
-                            UnitNumber INTEGER NOT NULL,
-                            PRIMARY KEY (Address, PostalCode, UnitNumber),
-                            FOREIGN KEY (Address, PostalCode) REFERENCES Properties(Address, PostalCode)
-                                ON DELETE CASCADE,
-                            UNIQUE (Address, City, Province, UnitNumber)
+-- Creating the Appointments table
+CREATE TABLE Appointments (
+                          AppointmentID INTEGER NOT NULL,
+  	                      AppointmentStatus CHAR(9) NOT NULL,
+                          AppointmentDate CHAR(10) NOT NULL,
+                          AppointmentTime CHAR(5) NOT NULL,
+                          BuyerEmail VARCHAR(255) NOT NULL,
+                          RealtorID INTEGER NOT NULL,
+                          MeetingPlace VARCHAR(255) Not NULL,
+  	                      PRIMARY KEY (AppointmentID),
+  	                      UNIQUE (RealtorID, AppointmentDate, AppointmentTime, BuyerEmail),
+                          FOREIGN KEY (RealtorID) REFERENCES Realtors(RealtorID),
+                          FOREIGN KEY (BuyerEmail) REFERENCES Realtors(BuyerEmail)
 );
-
 
 CREATE TABLE PROPERTIES (
                             Address VARCHAR(255) NOT NULL,
