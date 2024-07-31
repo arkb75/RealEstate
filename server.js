@@ -11,7 +11,6 @@ const app = express();
 const PORT = envVariables.PORT || 65534;  // Adjust the PORT if needed (e.g., if you encounter a "port already occupied" error)
 
 // Middleware setup
-app.use(express.static('public'));  // Serve static files from the 'public' directory
 app.use(express.json());            // Parse incoming JSON payloads
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded payloads
 

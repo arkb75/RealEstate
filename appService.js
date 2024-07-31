@@ -76,9 +76,28 @@ async function testOracleConnection() {
     });
 }
 
-async function fetchUserByEmail(email) {
+async function fetchAllUsers() {
     return await withOracleDB(async (connection) => {
-        console.log('Executing query for email:', email);
+        try {
+            const result = await connection.execute('SELECT * FROM USERS');
+            console.log('All Users:', result.rows);
+            return result.rows;
+        } catch (err) {
+            console.error('Error fetching all users:', err);
+            return [];
+        }
+    }).catch((err) => {
+        console.error('Error with OracleDB connection:', err);
+        return [];
+    });
+}
+
+// Debugging: Fetch all users before checking for specific email
+
+async function fetchUserByEmail(email) {
+    fetchAllUsers();
+    return await withOracleDB(async (connection) => {
+        console.log('Executing q for email:', email);
         try {
             const result = await connection.execute('SELECT * FROM USERS WHERE Email = :email', [email]);
             console.log('Query result:', result);
