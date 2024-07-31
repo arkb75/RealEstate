@@ -18,6 +18,7 @@ CREATE TABLE USERS (
                        Name VARCHAR(255) NOT NULL,
                        Email VARCHAR(255) NOT NULL,
                        Phone INTEGER NOT NULL,
+                       UserType VARCHAR2(20),
                        PRIMARY KEY(Email),
                        UNIQUE(Phone)
 );
@@ -169,13 +170,13 @@ CREATE TABLE Offers (
 
 
 -- INSERT values into the database tables
-INSERT INTO USERS(Name, Email, Phone) VALUES ('Rehnoor', 'rehnoorsaini@outlook.com', 4316885656);
-INSERT INTO USERS(Name, Email, Phone) VALUES ('Sam Jane', 'samjane@hotmail.com', 1234567890);
-INSERT INTO USERS(Name, Email, Phone) VALUES ('George Washington', 'georgewash@laundry.com', 2234567990);
-INSERT INTO USERS(Name, Email, Phone) VALUES ('Will Smith', 'willsmith@alaadin.com', 1237867893);
-INSERT INTO USERS(Name, Email, Phone) VALUES ('Sundar Pichai', 'sundarpichai@gmail.com', 2354557899);
-INSERT INTO USERS(Name, Email, Phone) VALUES ('Brett Lee', 'brettlee@rediffmail.com', 5154447890);
-INSERT INTO USERS(Name, Email, Phone) VALUES ('Steve Smith', 'stevesmith@google.com', 2345678901);
+INSERT INTO USERS(Name, Email, Phone, UserType) VALUES ('Rehnoor', 'rehnoorsaini@outlook.com', 4316885656, 'buyer');
+INSERT INTO USERS(Name, Email, Phone, UserType) VALUES ('Sam Jane', 'samjane@hotmail.com', 1234567890, 'seller');
+INSERT INTO USERS(Name, Email, Phone, UserType) VALUES ('George Washington', 'georgewash@laundry.com', 2234567990, 'buyer');
+INSERT INTO USERS(Name, Email, Phone, UserType) VALUES ('Will Smith', 'willsmith@alaadin.com', 1237867893, 'seller');
+INSERT INTO USERS(Name, Email, Phone, UserType) VALUES ('Sundar Pichai', 'sundarpichai@gmail.com', 2354557899, 'buyer');
+INSERT INTO USERS(Name, Email, Phone, UserType) VALUES ('Brett Lee', 'brettlee@rediffmail.com', 5154447890, 'seller');
+INSERT INTO USERS(Name, Email, Phone, UserType) VALUES ('Steve Smith', 'stevesmith@google.com', 2345678901, 'buyer');
 
 
 INSERT INTO Realtors (RealtorID, Name, Email, Phone, YearsOfExperience, RealEstateFirm)

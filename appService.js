@@ -76,6 +76,23 @@ async function testOracleConnection() {
     });
 }
 
+async function fetchUserByEmail(email) {
+    return await withOracleDB(async (connection) => {
+        console.log('Executing query for email:', email);
+        try {
+            const result = await connection.execute('SELECT * FROM USERS WHERE Email = :email', [email]);
+            console.log('Query result:', result);
+            return result.rows.length ? result.rows[0] : null;
+        } catch (err) {
+            console.error('Error executing query:', err);
+            return null;
+        }
+    }).catch((err) => {
+        console.error('Error with OracleDB connection:', err);
+        return null;
+    });
+}
+
 async function fetchDemotableFromDb() {
     return await withOracleDB(async (connection) => {
         const result = await connection.execute('SELECT ListingID, Address, PostalCode, ListingPrice FROM LISTINGS');
@@ -142,11 +159,27 @@ async function countDemotable() {
     });
 }
 
+async function createUser(email, name, phone, userType) {
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute(
+            `INSERT INTO USERS (Name, Email, Phone, UserType) VALUES (:name, :email, :phone, :userType)`,
+            [name, email, phone, userType],
+            { autoCommit: true }
+        );
+
+        return result.rowsAffected && result.rowsAffected > 0;
+    }).catch(() => {
+        return false;
+    });
+}
+
 module.exports = {
     testOracleConnection,
+    fetchUserByEmail,
     fetchDemotableFromDb,
     initiateDemotable, 
     insertDemotable, 
     updateNameDemotable, 
-    countDemotable
+    countDemotable,
+    createUser
 };

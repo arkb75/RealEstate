@@ -12,7 +12,6 @@
  * 
  */
 
-
 // This function checks the database connection and updates its status on the frontend.
 async function checkDbConnection() {
     const statusElem = document.getElementById('dbStatus');
@@ -176,6 +175,40 @@ async function countDemotable() {
     }
 }
 
+// Handle login form submission
+async function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value;
+
+    const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+    });
+    const result = await response.json();
+    alert(result.message);
+}
+
+// Handle registration form submission
+async function handleRegister(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value;
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const userType = document.getElementById('userType').value;
+
+    const response = await fetch('/register.html', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, name, phone, userType })
+    });
+    const result = await response.json();
+    alert(result.message);
+}
 
 // ---------------------------------------------------------------
 // Initializes the webpage functionalities.
@@ -187,6 +220,17 @@ window.onload = function() {
     document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
     document.getElementById("updataNameDemotable").addEventListener("submit", updateNameDemotable);
     document.getElementById("countDemotable").addEventListener("click", countDemotable);
+
+    // Add event listeners for login and registration forms
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
+
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', handleRegister);
+    }
 };
 
 // General function to refresh the displayed table data. 
