@@ -77,9 +77,29 @@ async function testOracleConnection() {
 
 async function fetchDemotableFromDb() {
     return await withOracleDB(async (connection) => {
-        const result = await connection.execute('SELECT ListingID, Address, PostalCode, ListingPrice FROM LISTINGS');
+        const result = await connection.execute('SELECT ListingID, Address, PostalCode, ListingPrice, ListingStatus FROM LISTINGS');
         return result.rows;
     }).catch(() => {
+        return [];
+    });
+}
+
+async function getPropertyDetails(listingId, addr, pc) {
+    return await withOracleDB(async (connection) => {
+        const query = `
+            SELECT *
+            FROM PROPERTIES
+            WHERE ADDRESS = :addr AND POSTALCODE = :pc
+        `;
+
+        const result = await connection.execute(query, {
+            addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+            pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+        });
+        console.log(result.rows);
+        return result.rows;
+    }).catch(() => {
+        console.log("uh oh stinky");
         return [];
     });
 }
@@ -142,6 +162,7 @@ async function countDemotable() {
 }
 
 module.exports = {
+    getPropertyDetails,
     testOracleConnection,
     fetchDemotableFromDb,
     initiateDemotable, 

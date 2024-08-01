@@ -1,8 +1,8 @@
 const express = require('express');
 const appService = require('./appService');
 
-const router = express.Router();
 
+const router = express.Router();
 // ----------------------------------------------------------
 // API endpoints
 // Modify or extend these routes based on your project's needs.
@@ -15,7 +15,28 @@ router.get('/check-db-connection', async (req, res) => {
     }
 });
 
-router.get('/demotable', async (req, res) => {
+router.get('/ListingDetail', async (req, res) => {
+    const listingId = req.query.lid;
+    const addr = req.query.address;
+    const pc = req.query.postalCode;
+    console.log(listingId);
+    console.log(addr);
+    console.log(pc);
+
+
+    const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
+    res.render('ListingDetail', { property: propertyDetails });
+
+    // res.render('ListingDetail', {
+    //     property: propertyDetails,
+    //     address: addr,
+    //     postalCode: pc,
+    //
+    // });
+});
+
+
+router.get('/listings', async (req, res) => {
     const tableContent = await appService.fetchDemotableFromDb();
     res.json({data: tableContent});
 });

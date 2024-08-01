@@ -37,12 +37,12 @@ async function checkDbConnection() {
 }
 
 // Fetches data from the demotable and displays it.
-async function fetchAndDisplayUsers() {
+async function fetchAndDisplayListings() {
     // const tableElement = document.getElementById('demotable');
     // const tableBody = tableElement.querySelector('tbody');
     const alllistingscontainer = document.getElementById('listings');
 
-    const response = await fetch('/demotable', {
+    const response = await fetch('/listings', {
         method: 'GET'
     });
 
@@ -54,35 +54,41 @@ async function fetchAndDisplayUsers() {
         const listingContainer = document.createElement('div');
         listingContainer.className = 'listing-container';
         const id = document.createElement('h3');
-        id.textContent = listing[0];
-        const addr = document.createElement('h3');
-        addr.textContent = listing[1];
+        const listingID = listing[0];
+        id.textContent = listingID;
+        const addrElt = document.createElement('h3');
+        const addr = listing[1];
+        addrElt.textContent = addr;
         const postal = document.createElement('h3');
-        postal.textContent = listing[2];
+        const pc = listing[2];
+        postal.textContent = pc;
         const price = document.createElement('h3');
-        price.textContent = listing[3];
+        price.textContent = '$' + listing[3];
+        const status = document.createElement('h3');
+        status.textContent = listing[4];
+        const detailsBtn = document.createElement("button");
+        detailsBtn.textContent = "Details";
+        detailsBtn.onclick = function() {
+            showListingDetails(listingID, addr, pc);
+        };
         listingContainer.appendChild(id);
-        listingContainer.appendChild(addr);
+        listingContainer.appendChild(addrElt);
         listingContainer.appendChild(postal);
         listingContainer.appendChild(price);
+        listingContainer.appendChild(status);
+        listingContainer.appendChild(detailsBtn);
         alllistingscontainer.appendChild(listingContainer);
     })
 
-    // // Always clear old, already fetched data before new fetching process.
-    // if (tableBody) {
-    //     tableBody.innerHTML = '';
-    // }
-    //
-    // demotableContent.forEach(listing => {
-    //     const row = tableBody.insertRow();
-    //     listing.forEach((field, index) => {
-    //         const cell = row.insertCell(index);
-    //         cell.textContent = field;
-    //     });
-    // });
-
 
 }
+
+function showListingDetails(listingID, addr, pc) {
+    const encodedAddr = encodeURIComponent(addr);
+    const encodedPC = encodeURIComponent(pc);
+    window.location.href = `/ListingDetail?lid=${listingID}&address=${encodedAddr}&postalCode=${encodedPC}`;
+}
+
 
 // This function resets or initializes the demotable.
 async function resetDemotable() {
@@ -182,7 +188,7 @@ async function countDemotable() {
 // Add or remove event listeners based on the desired functionalities.
 window.onload = function() {
     checkDbConnection();
-    fetchTableData();
+    fetchListingData();
     document.getElementById("resetDemotable").addEventListener("click", resetDemotable);
     document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
     document.getElementById("updataNameDemotable").addEventListener("submit", updateNameDemotable);
@@ -191,6 +197,6 @@ window.onload = function() {
 
 // General function to refresh the displayed table data. 
 // You can invoke this after any table-modifying operation to keep consistency.
-function fetchTableData() {
-    fetchAndDisplayUsers();
+function fetchListingData() {
+    fetchAndDisplayListings();
 }
