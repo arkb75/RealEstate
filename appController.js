@@ -15,6 +15,15 @@ router.get('/check-db-connection', async (req, res) => {
     }
 });
 
+router.get('/getLoggedUser', async (req, res) => {
+    const loggedUser = await appService.getLoggedUser();
+
+
+    return loggedUser;
+});
+
+
+
 router.get('/ListingDetail', async (req, res) => {
     const listingId = req.query.lid;
     const addr = req.query.address;
@@ -46,7 +55,6 @@ router.post('/login', async (req, res) => {
 
     try {
         const loginResult = await appService.authenticateUser(email);
-
         if (loginResult.success) {
             res.json({
                 success: true,
@@ -81,7 +89,7 @@ router.post('/register', async (req, res) => {
 });
 
 router.get('/listings', async (req, res) => {
-    const tableContent = await appService.fetchDemotableFromDb();
+    const tableContent = await appService.fetchListingsFromDb();
     res.json({data: tableContent});
 });
 

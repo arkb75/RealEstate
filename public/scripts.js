@@ -42,6 +42,7 @@ async function fetchAndDisplayListings() {
     // const tableBody = tableElement.querySelector('tbody');
     const alllistingscontainer = document.getElementById('listings');
 
+
     const response = await fetch('/listings', {
         method: 'GET'
     });
@@ -79,6 +80,14 @@ async function fetchAndDisplayListings() {
         listingContainer.appendChild(detailsBtn);
         alllistingscontainer.appendChild(listingContainer);
     })
+
+    // TODO: loggedUser is a variable that stores user info!!!
+
+    const loggedUser = await fetch('/getLoggedUser', {
+        method: 'GET'
+    });
+
+    console.log(loggedUser);
 
 
 }

@@ -1,5 +1,6 @@
 const oracledb = require('oracledb');
 const loadEnvFile = require('./utils/envUtil');
+let loggedUser;
 
 const envVariables = loadEnvFile('./.env');
 
@@ -75,7 +76,7 @@ async function testOracleConnection() {
     });
 }
 
-async function fetchDemotableFromDb() {
+async function fetchListingsFromDb() {
     return await withOracleDB(async (connection) => {
         const result = await connection.execute('SELECT ListingID, Address, PostalCode, ListingPrice, ListingStatus FROM LISTINGS');
         return result.rows;
@@ -203,6 +204,8 @@ async function authenticateUser(email, password) {
             email: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: email },
         });
 
+        loggedUser = result.rows[0];
+
         if (result.rows.length > 0) {
             return { success: true, user: result.rows[0] };
         } else {
@@ -279,16 +282,20 @@ async function createAppointment(status, realtorID, date, time, buyerEmail, meet
     });
 }
 
+function getLoggedUser() {
+    return loggedUser;
+}
 
 module.exports = {
     getPropertyDetails,
     testOracleConnection,
-    fetchDemotableFromDb,
+    fetchListingsFromDb,
     initiateDemotable, 
     insertDemotable, 
     updateNameDemotable,
     authenticateUser,
     registerUser,
     countDemotable,
-    createAppointment
+    createAppointment,
+    getLoggedUser
 };
