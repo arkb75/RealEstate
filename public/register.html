@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Register</h1>
-    <form id="registerForm" method="POST">
+    <form id="registerForm">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
         <label for="name">Name:</label>
@@ -22,7 +22,27 @@
         </select>
         <button type="submit">Register</button>
     </form>
-    <p>Already have an account? <a href="/login.html">Login here</a></p>
-    <script src="scripts.js"></script>
+    <p>Already have an account? <a href="login.html">Login here</a></p>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const userType = document.getElementById('userType').value;
+            
+            const response = await fetch('/register.html', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, name, phone, userType })
+            });
+            
+            const result = await response.text();
+            alert(result);
+        });
+    </script>
 </body>
 </html>

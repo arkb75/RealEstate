@@ -1,5 +1,4 @@
 const express = require('express');
-const appService = require('./appService');
 const appController = require('./appController');
 
 // Load environment variables from .env file
@@ -11,55 +10,51 @@ const app = express();
 const PORT = envVariables.PORT || 65534;  // Adjust the PORT if needed (e.g., if you encounter a "port already occupied" error)
 
 // Middleware setup
-app.use(express.json());            // Parse incoming JSON payloads
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded payloads
+app.use(express.static('public'));  // Serve static files from the 'public' directory
+app.use(express.json());             // Parse incoming JSON payloads
+
+// If you prefer some other file as default page other than 'index.html',
+//      you can adjust and use the bellow line of code to
+//      route to send 'DEFAULT_FILE_NAME.html' as default for root URL
+// app.get('/', (req, res) => {
+//     res.sendFile(__dirname + '/public/DEFAULT_FILE_NAME.html');
+// });
 
 // Serve the login page as the entry point
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/login.html');
 });
 
-// Handle login form submission
-app.post('/login.html', async (req, res) => {
-    const { email } = req.body;
-    console.log('Login Request Body:', req.body);
+// // Serve login and registration pages
+// app.get('/login', (req, res) => {
+//     res.sendFile(__dirname + '/public/login.html');
+// });
 
-    try {
-        const user = await appService.fetchUserByEmail(email);
-        if (user) {
-            res.send(`Logged in with email: ${email}`);
-        } else {
-            res.status(401).send('Invalid email');
-        }
-    } catch (error) {
-        console.error('Error logging in:', error);
-        res.status(500).send('An error occurred during login.');
-    }
-});
+// app.get('/register', (req, res) => {
+//     res.sendFile(__dirname + '/public/register.html');
+// });
 
-// Handle registration form submission
-app.post('/register', async (req, res) => {
-    const { email, name, phone, userType } = req.body;
-    console.log('Registration Request Body:', req.body);
+// // Handle login form submission
+// app.post('/login', (req, res) => {
+//     const { email } = req.body;
+//     // Implement login logic here (e.g., check database for user)
+//     res.send(`Logged in with email: ${email}`);
+// });
 
-    try {
-        const createUserResult = await appService.createUser(email, name, phone, userType);
-        if (createUserResult) {
-            res.json({ success: true, message: "User registered successfully." });
-        } else {
-            res.json({ success: false, message: "Failed to register user." });
-        }
-    } catch (error) {
-        console.error('Error creating user:', error);
-        res.json({ success: false, message: "An error occurred during registration." });
-    }
-});
+// // Handle registration form submission
+// app.post('/register', (req, res) => {
+//     const { email, name, phone, userType } = req.body;
+//     // Implement registration logic here (e.g., save user to database)
+//     res.send(`Registered with email: ${email}, name: ${name}, phone: ${phone}, user type: ${userType}`);
+// });
 
-// Mount the router
+// mount the router
 app.use('/', appController);
+
 
 // ----------------------------------------------------------
 // Starting the server
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/`);
 });
+

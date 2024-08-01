@@ -12,6 +12,7 @@
  * 
  */
 
+
 // This function checks the database connection and updates its status on the frontend.
 async function checkDbConnection() {
     const statusElem = document.getElementById('dbStatus');
@@ -36,6 +37,37 @@ async function checkDbConnection() {
 }
 
 // Fetches data from the demotable and displays it.
+async function fetchAndDisplayUsers() {
+    // const tableElement = document.getElementById('demotable');
+    // const tableBody = tableElement.querySelector('tbody');
+    const alllistingscontainer = document.getElementById('listings');
+
+    const response = await fetch('/demotable', {
+        method: 'GET'
+    });
+
+    const responseData = await response.json();
+    const listingContent = responseData.data;
+
+    listingContent.forEach(listing => {
+        console.log(listing);
+        const listingContainer = document.createElement('div');
+        listingContainer.className = 'listing-container';
+        const id = document.createElement('h3');
+        id.textContent = listing[0];
+        const addr = document.createElement('h3');
+        addr.textContent = listing[1];
+        const postal = document.createElement('h3');
+        postal.textContent = listing[2];
+        const price = document.createElement('h3');
+        price.textContent = listing[3];
+        listingContainer.appendChild(id);
+        listingContainer.appendChild(addr);
+        listingContainer.appendChild(postal);
+        listingContainer.appendChild(price);
+        alllistingscontainer.appendChild(listingContainer);
+    })
+
     // // Always clear old, already fetched data before new fetching process.
     // if (tableBody) {
     //     tableBody.innerHTML = '';
@@ -48,6 +80,9 @@ async function checkDbConnection() {
     //         cell.textContent = field;
     //     });
     // });
+
+
+}
 
 // This function resets or initializes the demotable.
 async function resetDemotable() {
@@ -141,40 +176,6 @@ async function countDemotable() {
     }
 }
 
-// Handle login form submission
-async function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('email').value;
-
-    const response = await fetch('/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email })
-    });
-    const result = await response.json();
-    alert(result.message);
-}
-
-// Handle registration form submission
-async function handleRegister(event) {
-    event.preventDefault();
-    const email = document.getElementById('email').value;
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const userType = document.getElementById('userType').value;
-
-    const response = await fetch('/register.html', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, name, phone, userType })
-    });
-    const result = await response.json();
-    alert(result.message);
-}
 
 // ---------------------------------------------------------------
 // Initializes the webpage functionalities.
@@ -186,17 +187,6 @@ window.onload = function() {
     document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
     document.getElementById("updataNameDemotable").addEventListener("submit", updateNameDemotable);
     document.getElementById("countDemotable").addEventListener("click", countDemotable);
-
-    // Add event listeners for login and registration forms
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    }
-
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-        registerForm.addEventListener('submit', handleRegister);
-    }
 };
 
 // General function to refresh the displayed table data. 

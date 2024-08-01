@@ -64,7 +64,6 @@ async function withOracleDB(action) {
     }
 }
 
-
 // ----------------------------------------------------------
 // Core functions for database operations
 // Modify these functions, especially the SQL queries, based on your project's requirements and design.
@@ -73,42 +72,6 @@ async function testOracleConnection() {
         return true;
     }).catch(() => {
         return false;
-    });
-}
-
-async function fetchAllUsers() {
-    return await withOracleDB(async (connection) => {
-        try {
-            const result = await connection.execute('SELECT * FROM USERS');
-            console.log('All Users:', result.rows);
-            return result.rows;
-        } catch (err) {
-            console.error('Error fetching all users:', err);
-            return [];
-        }
-    }).catch((err) => {
-        console.error('Error with OracleDB connection:', err);
-        return [];
-    });
-}
-
-// Debugging: Fetch all users before checking for specific email
-
-async function fetchUserByEmail(email) {
-    fetchAllUsers();
-    return await withOracleDB(async (connection) => {
-        console.log('Executing q for email:', email);
-        try {
-            const result = await connection.execute('SELECT * FROM USERS WHERE Email = :email', [email]);
-            console.log('Query result:', result);
-            return result.rows.length ? result.rows[0] : null;
-        } catch (err) {
-            console.error('Error executing query:', err);
-            return null;
-        }
-    }).catch((err) => {
-        console.error('Error with OracleDB connection:', err);
-        return null;
     });
 }
 
@@ -178,27 +141,11 @@ async function countDemotable() {
     });
 }
 
-async function createUser(email, name, phone, userType) {
-    return await withOracleDB(async (connection) => {
-        const result = await connection.execute(
-            `INSERT INTO USERS (Name, Email, Phone, UserType) VALUES (:name, :email, :phone, :userType)`,
-            [name, email, phone, userType],
-            { autoCommit: true }
-        );
-
-        return result.rowsAffected && result.rowsAffected > 0;
-    }).catch(() => {
-        return false;
-    });
-}
-
 module.exports = {
     testOracleConnection,
-    fetchUserByEmail,
     fetchDemotableFromDb,
     initiateDemotable, 
     insertDemotable, 
     updateNameDemotable, 
-    countDemotable,
-    createUser
+    countDemotable
 };
