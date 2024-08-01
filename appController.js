@@ -17,8 +17,6 @@ router.get('/check-db-connection', async (req, res) => {
 
 router.get('/getLoggedUser', async (req, res) => {
     const loggedUser = await appService.getLoggedUser();
-
-
     return loggedUser;
 });
 
@@ -34,7 +32,10 @@ router.get('/ListingDetail', async (req, res) => {
 
 
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
-    res.render('ListingDetail', { property: propertyDetails });
+    const loggedUser = await appService.getLoggedUser();
+    res.render('ListingDetail', {
+        property: propertyDetails,
+        user: loggedUser});
 
     // res.render('ListingDetail', {
     //     property: propertyDetails,
