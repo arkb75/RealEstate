@@ -1,4 +1,4 @@
-/*
+ /*
  * These functions below are for various webpage functionalities. 
  * Each function serves to process data on the frontend:
  *      - Before sending requests to the backend.

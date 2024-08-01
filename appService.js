@@ -160,6 +160,65 @@ async function countDemotable() {
         return -1;
     });
 }
+async function authenticateUser(email, password) {
+    return await withOracleDB(async (connection) => {
+        const query = 'SELECT * FROM USERS WHERE EMAIL = :email';
+
+        const result = await connection.execute(query, {
+            email: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: email },
+        });
+
+        if (result.rows.length > 0) {
+            return { success: true, user: result.rows[0] };
+        } else {
+            return { success: false, message: 'Invalid email' };
+        }
+    }).catch((error) => {
+        console.error('Authentication error:', error);
+        return { success: false, message: 'An error occurred during authentication' };
+    });
+}
+
+async function registerUser(email, name, phone, userType, realtorID) {
+    return await withOracleDB(async (connection) => {
+        // First, check if the email already exists
+        const checkUserQuery = `SELECT Email FROM USERS WHERE Email = :email`;
+        const checkResult = await connection.execute(checkUserQuery, [email]);
+
+        if (checkResult.rows.length > 0) {
+            throw new Error('User with this email already exists');
+        }
+
+        // Check if the realtorID exists
+        const checkRealtorQuery = `SELECT RealtorID FROM REALTORS WHERE RealtorID = :realtorID`;
+        const realtorResult = await connection.execute(checkRealtorQuery, [realtorID]);
+
+        if (realtorResult.rows.length === 0) {
+            throw new Error('Invalid Realtor ID');
+        }
+
+        // Insert the new user
+        const insertQuery = `
+            INSERT INTO USERS (Name, Email, Phone, UserType, RealtorID)
+            VALUES (:name, :email, :phone, :userType, :realtorID)
+        `;
+
+        const result = await connection.execute(
+            insertQuery,
+            [name, email, phone, userType, realtorID],
+            { autoCommit: true }
+        );
+
+        if (result.rowsAffected && result.rowsAffected === 1) {
+            return true;
+        } else {
+            throw new Error('Failed to register user');
+        }
+    }).catch((error) => {
+        console.error('Error in registerUser:', error);
+        throw error;
+    });
+}
 
 module.exports = {
     getPropertyDetails,
@@ -167,6 +226,8 @@ module.exports = {
     fetchDemotableFromDb,
     initiateDemotable, 
     insertDemotable, 
-    updateNameDemotable, 
+    updateNameDemotable,
+    authenticateUser,
+    registerUser,
     countDemotable
 };

@@ -35,6 +35,50 @@ router.get('/ListingDetail', async (req, res) => {
     // });
 });
 
+// // GET route for the login page
+// router.get('/login', (req, res) => {
+//     res.sendFile('login.html', { root: './public' });
+// });
+
+// POST route for handling login
+router.post('/login', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const loginResult = await appService.authenticateUser(email);
+
+        if (loginResult.success) {
+            res.json({
+                success: true,
+                message: 'Login successful',
+                redirectUrl: '/index.html'
+            });
+        } else {
+            res.status(401).json({
+                success: false,
+                message: loginResult.message
+            });
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred during login'
+        });
+    }
+});
+
+router.post('/register', async (req, res) => {
+    const { email, name, phone, userType, realtorID } = req.body;
+
+    try {
+        const result = await appService.registerUser(email, name, phone, userType, realtorID);
+        res.json({ success: true, message: 'Registration successful' });
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
 
 router.get('/listings', async (req, res) => {
     const tableContent = await appService.fetchDemotableFromDb();
