@@ -129,5 +129,31 @@ router.get('/count-demotable', async (req, res) => {
     }
 });
 
+router.post('/appointments', async (req, res) => {
+    const { status, realtorID, date, time, buyerEmail, meetingPlace } = req.body;
+
+    try {
+        const result = await appService.createAppointment(status, realtorID, date, time, buyerEmail, meetingPlace);
+
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'Appointment booked successfully'
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: result.message
+            });
+        }
+    } catch (error) {
+        console.error('Appointment booking error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while booking the appointment'
+        });
+    }
+});
+
 
 module.exports = router;

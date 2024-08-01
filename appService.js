@@ -220,6 +220,31 @@ async function registerUser(email, name, phone, userType, realtorID) {
     });
 }
 
+async function createAppointment(status, realtorID, date, time, buyerEmail, meetingPlace) {
+    return await withOracleDB(async (connection) => {
+        const insertQuery = `
+            INSERT INTO Appointments (Status, RealtorID, Date, Time, BuyerEmail, MeetingPlace)
+            VALUES (:status, :realtorID, :date, :time, :buyerEmail, :meetingPlace)
+        `;
+
+        const result = await connection.execute(
+            insertQuery,
+            { status, realtorID, date, time, buyerEmail, meetingPlace },
+            { autoCommit: true }
+        );
+
+        if (result.rowsAffected && result.rowsAffected > 0) {
+            return { success: true };
+        } else {
+            throw new Error('Failed to create appointment');
+        }
+    }).catch((error) => {
+        console.error('Error creating appointment:', error);
+        return { success: false, message: 'Failed to create appointment' };
+    });
+}
+
+
 module.exports = {
     getPropertyDetails,
     testOracleConnection,
@@ -230,4 +255,5 @@ module.exports = {
     authenticateUser,
     registerUser,
     countDemotable
+    createAppointment
 };
