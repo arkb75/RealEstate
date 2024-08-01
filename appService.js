@@ -86,18 +86,53 @@ async function fetchDemotableFromDb() {
 
 async function getPropertyDetails(listingId, addr, pc) {
     return await withOracleDB(async (connection) => {
-        const query = `
+        const propertyQuery = `
             SELECT *
             FROM PROPERTIES
             WHERE ADDRESS = :addr AND POSTALCODE = :pc
         `;
+        const listingQuery = `
+            SELECT ListingID, ListingStatus, SellerEmail, ListingPrice 
+            FROM LISTINGS 
+            WHERE Address = :addr AND PostalCode = :pc AND ListingID = :listingId
+        `;
 
-        const result = await connection.execute(query, {
+        const propertyResult = await connection.execute(propertyQuery, {
             addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
             pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
         });
-        console.log(result.rows);
-        return result.rows;
+
+        const listingResult = await connection.execute(listingQuery, {
+            addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+            pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc },
+            ListingID: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(listingId, 10) }
+        });
+
+
+        const LR = listingResult.rows[0];
+        const PR = propertyResult.rows[0];
+
+        const propertyInfo = LR.concat(PR);
+
+        const sEmail = propertyInfo[2];
+
+        const getRealtorInfo = `
+        SELECT * 
+        FROM REALTORS r
+        WHERE r.RealtorID IN
+            (SELECT RealtorID
+            FROM USERS 
+            WHERE Email = :sEmail)
+        `;
+
+        const realtorResult = await connection.execute(getRealtorInfo, {
+            sEmail: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: sEmail }
+        });
+
+        const result = propertyInfo.concat(realtorResult.rows[0]);
+
+
+        return result;
     }).catch(() => {
         console.log("uh oh stinky");
         return [];
@@ -254,6 +289,6 @@ module.exports = {
     updateNameDemotable,
     authenticateUser,
     registerUser,
-    countDemotable
+    countDemotable,
     createAppointment
 };

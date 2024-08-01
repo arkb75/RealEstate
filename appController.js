@@ -19,9 +19,9 @@ router.get('/ListingDetail', async (req, res) => {
     const listingId = req.query.lid;
     const addr = req.query.address;
     const pc = req.query.postalCode;
-    console.log(listingId);
-    console.log(addr);
-    console.log(pc);
+    // console.log(listingId);
+    // console.log(addr);
+    // console.log(pc);
 
 
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
