@@ -84,7 +84,7 @@ CREATE TABLE CONDOS (
                         PostalCode CHAR(6) NOT NULL,
                         HOAFee INTEGER NOT NULL,
                         UnitNumber INTEGER NOT NULL,
-                        PRIMARY KEY (Address, PostalCode, UnitNumber),
+                        PRIMARY KEY (Address, PostalCode),
                         FOREIGN KEY (Address, PostalCode) REFERENCES PROPERTIES(Address, PostalCode)
                             ON DELETE CASCADE
 );
@@ -93,7 +93,7 @@ CREATE TABLE APARTMENTS (
                             Address VARCHAR(255) NOT NULL,
                             PostalCode CHAR(6) NOT NULL,
                             UnitNumber INTEGER NOT NULL,
-                            PRIMARY KEY (Address, PostalCode, UnitNumber),
+                            PRIMARY KEY (Address, PostalCode),
                             FOREIGN KEY (Address, PostalCode) REFERENCES PROPERTIES(Address, PostalCode)
                                 ON DELETE CASCADE
 );
