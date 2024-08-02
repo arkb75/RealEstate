@@ -188,12 +188,28 @@ function showListingDetails(listingID, addr, pc) {
 // }
 
 
+
+
 // ---------------------------------------------------------------
 // Initializes the webpage functionalities.
 // Add or remove event listeners based on the desired functionalities.
 window.onload = function() {
     checkDbConnection();
     fetchListingData();
+    document.getElementById('filters').style.display = 'none';
+    document.getElementById('showFilters').addEventListener("click", function() {
+        let filters = document.getElementById('filters');
+        let btn = document.getElementById('showFilters');
+
+        if (filters.style.display === 'none') {
+            filters.style.display = 'block';
+            btn.textContent = 'Hide Filters';
+        } else {
+            filters.style.display = 'none';
+            btn.textContent = 'Show Filters';
+        }
+    });
+
     // document.getElementById("resetDemotable").addEventListener("click", resetDemotable);
     // document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
     // document.getElementById("updataNameDemotable").addEventListener("submit", updateNameDemotable);
