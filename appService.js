@@ -333,6 +333,11 @@ async function registerUser(email, name, phone, userType, realtorID) {
 }
 
 async function createAppointment(status, realtorID, date, time, buyerEmail, meetingPlace) {
+    // Ensure only buyers can create appointments
+    if (loggedUser[3] !== 'buyer') {
+        return { success: false, message: 'Only buyers can create appointments' };
+    }
+
     return await withOracleDB(async (connection) => {
         const insertQuery = `
             INSERT INTO Appointments (Status, RealtorID, Date, Time, BuyerEmail, MeetingPlace)
@@ -355,6 +360,7 @@ async function createAppointment(status, realtorID, date, time, buyerEmail, meet
         return { success: false, message: 'Failed to create appointment' };
     });
 }
+
 
 async function getAmenities(addr, pc) {
     return await withOracleDB(async (connection) => {
