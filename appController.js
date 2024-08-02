@@ -32,12 +32,10 @@ router.get('/ListingDetail', async (req, res) => {
     const loggedUser = await appService.getLoggedUser();
     // const getAmenities = await appService.getAmenities(addr, pc);
     // console.log(getAmenities);
+    console.log(propertyDetails);
     res.render('ListingDetail', {
         property: propertyDetails,
         user: loggedUser});
-
-    // res.render('ListingDetail', {
-    //     property: propertyDetails});
 });
 
 router.get('/offer-details', async (req, res) => {

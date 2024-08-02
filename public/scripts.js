@@ -59,6 +59,7 @@ async function fetchAndDisplayListings(minPrice, maxPrice, minBed, minBath, prop
     }
 
     listingContent.forEach(listing => {
+        console.log(listing);
         const listingContainer = document.createElement('div');
         listingContainer.className = 'listing-container';
         const id = document.createElement('h3');
@@ -66,23 +67,26 @@ async function fetchAndDisplayListings(minPrice, maxPrice, minBed, minBath, prop
         id.textContent = listingID;
         const addrElt = document.createElement('h3');
         const addr = listing[1];
-        addrElt.textContent = addr;
-        const postal = document.createElement('h3');
-        const pc = listing[2];
-        postal.textContent = pc;
+        addrElt.textContent = addr + ", " + listing[2] + ", " + listing[3];
         const price = document.createElement('h3');
-        price.textContent = '$' + listing[3];
+        price.textContent = '$' + listing[4];
         const status = document.createElement('h3');
-        status.textContent = listing[4];
+        status.textContent = listing[5];
+        const baths = document.createElement('h3');
+        baths.textContent = "Bath: " + listing[6];
+        const beds = document.createElement('h3');
+        beds.textContent = "Beds: " + listing[7];
         const detailsBtn = document.createElement("button");
         detailsBtn.textContent = "Details";
+        const pc = listing[8];
         detailsBtn.onclick = function() {
             showListingDetails(listingID, addr, pc);
         };
         listingContainer.appendChild(id);
         listingContainer.appendChild(addrElt);
-        listingContainer.appendChild(postal);
         listingContainer.appendChild(price);
+        listingContainer.appendChild(beds);
+        listingContainer.appendChild(baths);
         listingContainer.appendChild(status);
         listingContainer.appendChild(detailsBtn);
         alllistingscontainer.appendChild(listingContainer);
@@ -96,98 +100,6 @@ function showListingDetails(listingID, addr, pc) {
     window.location.href = `/ListingDetail?lid=${listingID}&address=${encodedAddr}&postalCode=${encodedPC}`;
 }
 
-//
-// // This function resets or initializes the demotable.
-// async function resetDemotable() {
-//     const response = await fetch("/initiate-demotable", {
-//         method: 'POST'
-//     });
-//     const responseData = await response.json();
-//
-//     if (responseData.success) {
-//         const messageElement = document.getElementById('resetResultMsg');
-//         messageElement.textContent = "demotable initiated successfully!";
-//         fetchTableData();
-//     } else {
-//         alert("Error initiating table!");
-//     }
-// }
-
-// Inserts new records into the demotable.
-// async function insertDemotable(event) {
-//     event.preventDefault();
-//
-//     const idValue = document.getElementById('insertId').value;
-//     const nameValue = document.getElementById('insertName').value;
-//
-//     const response = await fetch('/insert-demotable', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//             id: idValue,
-//             name: nameValue
-//         })
-//     });
-//
-//     const responseData = await response.json();
-//     const messageElement = document.getElementById('insertResultMsg');
-//
-//     if (responseData.success) {
-//         messageElement.textContent = "Data inserted successfully!";
-//         fetchTableData();
-//     } else {
-//         messageElement.textContent = "Error inserting data!";
-//     }
-// }
-
-// Updates names in the demotable.
-// async function updateNameDemotable(event) {
-//     event.preventDefault();
-//
-//     const oldNameValue = document.getElementById('updateOldName').value;
-//     const newNameValue = document.getElementById('updateNewName').value;
-//
-//     const response = await fetch('/update-name-demotable', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//             oldName: oldNameValue,
-//             newName: newNameValue
-//         })
-//     });
-//
-//     const responseData = await response.json();
-//     const messageElement = document.getElementById('updateNameResultMsg');
-//
-//     if (responseData.success) {
-//         messageElement.textContent = "Name updated successfully!";
-//         fetchTableData();
-//     } else {
-//         messageElement.textContent = "Error updating name!";
-//     }
-// }
-
-// Counts rows in the demotable.
-// Modify the function accordingly if using different aggregate functions or procedures.
-// async function countDemotable() {
-//     const response = await fetch("/count-demotable", {
-//         method: 'GET'
-//     });
-//
-//     const responseData = await response.json();
-//     const messageElement = document.getElementById('countResultMsg');
-//
-//     if (responseData.success) {
-//         const tupleCount = responseData.count;
-//         messageElement.textContent = `The number of tuples in demotable: ${tupleCount}`;
-//     } else {
-//         alert("Error in count demotable!");
-//     }
-// }
 
 
 function toggleFilters() {

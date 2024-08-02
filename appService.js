@@ -82,7 +82,7 @@ async function fetchListingsFromDb(minPrice, maxPrice, minBed, minBath, propType
         if (loggedUser[3] === 'seller') {
             const sellerEmail = loggedUser[1];
             const query = `
-            SELECT ListingID, l.Address, City, Province, ListingPrice, ListingStatus, NumBaths, NumBeds
+            SELECT ListingID, l.Address, City, Province, ListingPrice, ListingStatus, NumBaths, NumBeds, l.PostalCode
             FROM PROPERTIES p, LISTINGS l
             WHERE SellerEmail = :sellerEmail AND 
                   p.Address = l.Address AND
@@ -106,12 +106,11 @@ async function fetchListingsFromDb(minPrice, maxPrice, minBed, minBath, propType
                 minYear: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minYear, 10)}
             });
 
-            console.log(result.rows);
             return result.rows;
         } else {
             return await withOracleDB(async (connection) => {
                 const query = `
-                SELECT ListingID, l.Address, City, Province, ListingPrice, ListingStatus, NumBaths, NumBeds
+                SELECT ListingID, l.Address, City, Province, ListingPrice, ListingStatus, NumBaths, NumBeds, l.PostalCode
                 FROM PROPERTIES p, LISTINGS l
                 WHERE p.Address = l.Address AND
                   p.PostalCode = l.PostalCode AND
@@ -210,6 +209,7 @@ async function getPropertyDetails(listingId, addr, pc) {
         const LR = listingResult.rows[0];
         const PR = propertyResult.rows[0];
 
+
         const propertyInfo = LR.concat(PR);
 
         const sEmail = propertyInfo[2];
@@ -286,7 +286,6 @@ async function getPropertyDetails(listingId, addr, pc) {
         }
 
         const result = PI.concat(additionalInfo);
-
         return result;
     }).catch(() => {
         console.log("uh oh stinky");
@@ -515,7 +514,6 @@ module.exports = {
     countDemotable,
     createAppointment,
     getLoggedUser,
-    getAmenities,
     getAppointments,
     cancelAppointment,
     createOffer
