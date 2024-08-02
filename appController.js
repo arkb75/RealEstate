@@ -1,6 +1,6 @@
 const express = require('express');
 const appService = require('./appService');
-
+let currlistingID;
 
 const router = express.Router();
 // ----------------------------------------------------------
@@ -26,7 +26,7 @@ router.get('/ListingDetail', async (req, res) => {
     const listingId = req.query.lid;
     const addr = req.query.address;
     const pc = req.query.postalCode;
-
+    currlistingID = listingId;
 
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
     const loggedUser = await appService.getLoggedUser();
@@ -42,12 +42,11 @@ router.get('/ListingDetail', async (req, res) => {
 
 router.get('/offer-details', async (req, res) => {
     const loggedUser = await appService.getLoggedUser();
-    console.log(loggedUser[1]);
     const offerDetails = {
         offerDate: new Date().toISOString().split('T')[0],
         offerExpiryDate: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString().split('T')[0],
-        buyerEmail: 'example@example.com',  // replace with actual data
-        listingID: 1,                       // replace with actual data
+        buyerEmail: loggedUser[1],
+        listingID: currlistingID,
     };
     res.json(offerDetails);
 });
