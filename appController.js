@@ -155,5 +155,32 @@ router.post('/appointments', async (req, res) => {
     }
 });
 
+// POST route for updating appointment status
+router.post('/update-appointment-status', async (req, res) => {
+    const { appointmentID, status } = req.body;
+
+    try {
+        const result = await appService.updateAppointmentStatus(appointmentID, status);
+
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'Appointment status updated successfully'
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: result.message
+            });
+        }
+    } catch (error) {
+        console.error('Error updating appointment status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while updating the appointment status'
+        });
+    }
+});
+
 
 module.exports = router;

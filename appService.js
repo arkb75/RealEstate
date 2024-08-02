@@ -245,6 +245,8 @@ async function createAppointment(status, realtorID, date, time, buyerEmail, meet
 }
 
 
+
+
 module.exports = {
     getPropertyDetails,
     testOracleConnection,
@@ -254,6 +256,6 @@ module.exports = {
     updateNameDemotable,
     authenticateUser,
     registerUser,
-    countDemotable
+    countDemotable,
     createAppointment
 };
