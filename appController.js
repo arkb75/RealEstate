@@ -159,32 +159,31 @@ router.post('/appointments', async (req, res) => {
     }
 });
 
-// POST route for updating appointment status
-// router.post('/update-appointment-status', async (req, res) => {
-//     const { appointmentID, status } = req.body;
-//
-//     try {
-//         const result = await appService.updateAppointmentStatus(appointmentID, status);
-//
-//         if (result.success) {
-//             res.json({
-//                 success: true,
-//                 message: 'Appointment status updated successfully'
-//             });
-//         } else {
-//             res.status(400).json({
-//                 success: false,
-//                 message: result.message
-//             });
-//         }
-//     } catch (error) {
-//         console.error('Error updating appointment status:', error);
-//         res.status(500).json({
-//             success: false,
-//             message: 'An error occurred while updating the appointment status'
-//         });
-//     }
-// });
+// Fetch appointments based on user type
+router.get('/appointments', async (req, res) => {
+    try {
+        const appointments = await appService.getAppointments();
+        res.json({ success: true, appointments });
+    } catch (error) {
+        console.error('Error fetching appointments:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch appointments' });
+    }
+});
 
-// test commit
+// Cancel an appointment
+router.post('/cancel-appointment', async (req, res) => {
+    const { appointmentID } = req.body;
+    try {
+        const result = await appService.cancelAppointment(appointmentID);
+        if (result.success) {
+            res.json({ success: true, message: 'Appointment canceled successfully' });
+        } else {
+            res.status(400).json({ success: false, message: result.message });
+        }
+    } catch (error) {
+        console.error('Error canceling appointment:', error);
+        res.status(500).json({ success: false, message: 'Failed to cancel appointment' });
+    }
+});
+
 module.exports = router;

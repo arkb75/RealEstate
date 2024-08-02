@@ -382,13 +382,53 @@ function getLoggedUser() {
 }
 
 
+async function getAppointments() {
+    return await withOracleDB(async (connection) => {
+        let query;
+        let binds = {};
+        if (loggedUser[3] === 'buyer') {
+            query = `
+                SELECT * 
+                FROM Appointments 
+                WHERE BuyerEmail = :buyerEmail
+            `;
+            binds = { buyerEmail: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: loggedUser[1] } };
+        } else if (loggedUser[3] === 'seller') {
+            query = `
+                SELECT * 
+                FROM Appointments 
+                WHERE RealtorID = :realtorID
+            `;
+            binds = { realtorID: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: loggedUser[4] } };
+        }
+
+        const result = await connection.execute(query, binds);
+        return result.rows;
+    });
+}
+
+async function cancelAppointment(appointmentID) {
+    return await withOracleDB(async (connection) => {
+        const result = await connection.execute(
+            `DELETE FROM Appointments WHERE AppointmentID = :appointmentID`,
+            { appointmentID: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: appointmentID } },
+            { autoCommit: true }
+        );
+
+        if (result.rowsAffected && result.rowsAffected > 0) {
+            return { success: true };
+        } else {
+            return { success: false, message: 'Failed to cancel appointment' };
+        }
+    });
+}
 
 module.exports = {
     getPropertyDetails,
     testOracleConnection,
     fetchListingsFromDb,
-    initiateDemotable, 
-    insertDemotable, 
+    initiateDemotable,
+    insertDemotable,
     updateNameDemotable,
     authenticateUser,
     registerUser,
@@ -396,4 +436,7 @@ module.exports = {
     createAppointment,
     getLoggedUser,
     getAmenities,
+    getAppointments,
+    cancelAppointment,
 };
+
