@@ -29,17 +29,15 @@ router.get('/ListingDetail', async (req, res) => {
 
 
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
-<<<<<<< HEAD
     const loggedUser = await appService.getLoggedUser();
     const getAmenities = await appService.getAmenities(addr, pc);
     res.render('ListingDetail', {
         property: propertyDetails,
         user: loggedUser,
         amenities: getAmenities});
-=======
+
     res.render('ListingDetail', {
         property: propertyDetails});
->>>>>>> 7c46030 (Partial create offer page)
 });
 
 router.get('/offer-details', async (req, res) => {
