@@ -78,11 +78,28 @@ async function testOracleConnection() {
 
 async function fetchListingsFromDb() {
     return await withOracleDB(async (connection) => {
-        const result = await connection.execute('SELECT ListingID, Address, PostalCode, ListingPrice, ListingStatus FROM LISTINGS');
-        return result.rows;
-    }).catch(() => {
-        return [];
-    });
+        console.log(loggedUser[3]);
+        if (loggedUser[3] === 'seller') {
+            const sellerEmail = loggedUser[1];
+            const query = `
+            SELECT ListingID, Address, PostalCode, ListingPrice, ListingStatus
+            FROM LISTINGS
+            WHERE SellerEmail = :sellerEmail
+        `;
+            const result = await connection.execute(query, {
+                sellerEmail: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: sellerEmail }
+            });
+            console.log(result.rows);
+            return result.rows;
+        } else {
+            return await withOracleDB(async (connection) => {
+                const result = await connection.execute('SELECT ListingID, Address, PostalCode, ListingPrice, ListingStatus FROM LISTINGS');
+                return result.rows;
+            }).catch(() => {
+                return [];
+            });
+        }
+    })
 }
 
 async function getPropertyDetails(listingId, addr, pc) {
@@ -204,9 +221,8 @@ async function authenticateUser(email, password) {
             email: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: email },
         });
 
-        loggedUser = result.rows[0];
-
         if (result.rows.length > 0) {
+            loggedUser = result.rows[0];
             return { success: true, user: result.rows[0] };
         } else {
             return { success: false, message: 'Invalid email' };
