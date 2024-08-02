@@ -1,8 +1,6 @@
 const express = require('express');
 const appService = require('./appService');
-let currlistingID;
-let curradd;
-let currpc;
+let currReq;
 
 const router = express.Router();
 // ----------------------------------------------------------
@@ -28,10 +26,7 @@ router.get('/ListingDetail', async (req, res) => {
     const listingId = req.query.lid;
     const addr = req.query.address;
     const pc = req.query.postalCode;
-    currlistingID = listingId;
-    curraddr = req.query.address;
-    currpc = pc;
-    console.log(curraddr);
+    currReq = req;
 
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
     const loggedUser = await appService.getLoggedUser();
@@ -46,6 +41,10 @@ router.get('/ListingDetail', async (req, res) => {
 });
 
 router.get('/offer-details', async (req, res) => {
+    const listingId = currReq.query.lid;
+    const addr = currReq.query.address;
+    const pc = currReq.query.postalCode;
+
     try {
         const loggedUser = await appService.getLoggedUser();
 
@@ -54,9 +53,9 @@ router.get('/offer-details', async (req, res) => {
             offerExpiryDate: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString().split('T')[0],
             offerStatus: 'Pending',
             buyerEmail: loggedUser[1],
-            listingID: currlistingID,
-            address: curradd,
-            postalCode: currpc
+            listingID: listingId,
+            address: addr,
+            postalCode: pc
         };
 
         res.json(offerDetails);
