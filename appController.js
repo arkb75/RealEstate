@@ -1,6 +1,8 @@
 const express = require('express');
 const appService = require('./appService');
 let currlistingID;
+let curradd;
+let currpc;
 
 const router = express.Router();
 // ----------------------------------------------------------
@@ -27,6 +29,9 @@ router.get('/ListingDetail', async (req, res) => {
     const addr = req.query.address;
     const pc = req.query.postalCode;
     currlistingID = listingId;
+    curraddr = req.query.address;
+    currpc = pc;
+    console.log(curraddr);
 
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
     const loggedUser = await appService.getLoggedUser();
@@ -41,14 +46,50 @@ router.get('/ListingDetail', async (req, res) => {
 });
 
 router.get('/offer-details', async (req, res) => {
-    const loggedUser = await appService.getLoggedUser();
-    const offerDetails = {
-        offerDate: new Date().toISOString().split('T')[0],
-        offerExpiryDate: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString().split('T')[0],
-        buyerEmail: loggedUser[1],
-        listingID: currlistingID,
-    };
-    res.json(offerDetails);
+    try {
+        const loggedUser = await appService.getLoggedUser();
+
+        const offerDetails = {
+            offerDate: new Date().toISOString().split('T')[0],
+            offerExpiryDate: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString().split('T')[0],
+            offerStatus: 'Pending',
+            buyerEmail: loggedUser[1],
+            listingID: currlistingID,
+            address: curradd,
+            postalCode: currpc
+        };
+
+        res.json(offerDetails);
+    } catch (error) {
+        console.error('Error fetching offer details:', error);
+        res.status(500).json({ message: 'An error occurred while fetching offer details.' });
+    }
+});
+
+router.post('/create-offer', async (req, res) => {
+    const { offerAmount, buyerEmail, offerDate, offerExpiryDate, listingID, address, postalCode } = req.body;
+
+    try {
+        const result = await appService.createOffer(offerAmount, buyerEmail, offerDate, offerExpiryDate, listingID, address, postalCode);
+
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'Offer created successfully'
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: result.message
+            });
+        }
+    } catch (error) {
+        console.error('Offer creation error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while creating the offer'
+        });
+    }
 });
 
 router.post('/login', async (req, res) => {

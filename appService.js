@@ -101,6 +101,48 @@ async function fetchListingsFromDb() {
     })
 }
 
+async function createOffer(offerAmount, buyerEmail, offerDate, offerExpiryDate, listingID, address, postalCode) {
+    return await withOracleDB(async (connection) => {
+        const getMaxOfferIdQuery = `SELECT NVL(MAX(OfferID), 0) + 1 AS NextOfferID FROM OFFERS`;
+        const maxOfferIdResult = await connection.execute(getMaxOfferIdQuery);
+
+        const nextOfferID = maxOfferIdResult.rows[0][0];
+
+        console.log('Next OfferID:', nextOfferID);
+
+        const insertQuery = `
+            INSERT INTO OFFERS (
+                OfferID, OfferStatus, OfferDate, OfferAmount, BuyerEmail, OfferExpiryDate, ListingID, Address, PostalCode
+            ) VALUES (
+                :offerID, 'Pending', :offerDate, :offerAmount, :buyerEmail, :offerExpiryDate, :listingID, :address, :postalCode
+            )
+        `;
+
+        const result = await connection.execute(
+            insertQuery,
+            {
+                offerID: nextOfferID,
+                offerDate,
+                offerAmount,
+                buyerEmail,
+                offerExpiryDate,
+                listingID,
+                address,
+                postalCode
+            },
+            { autoCommit: true }
+        );
+
+        if (result.rowsAffected && result.rowsAffected > 0) {
+            return { success: true, offerID: nextOfferID };
+        } else {
+            throw new Error('Failed to create offer');
+        }
+    }).catch((error) => {
+        console.error('Error creating offer:', error);
+        return { success: false, message: 'Failed to create offer' };
+    });
+}
 async function getPropertyDetails(listingId, addr, pc) {
     return await withOracleDB(async (connection) => {
         const propertyQuery = `
@@ -438,5 +480,6 @@ module.exports = {
     getAmenities,
     getAppointments,
     cancelAppointment,
+    createOffer
 };
 
