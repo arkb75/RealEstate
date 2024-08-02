@@ -80,6 +80,12 @@ async function fetchAndDisplayListings() {
         listingContainer.appendChild(detailsBtn);
         alllistingscontainer.appendChild(listingContainer);
     })
+
+    const r = await fetch('/getLoggedUser', {
+        method: 'GET'
+    });
+    console.log(r);
+
 }
 
 function showListingDetails(listingID, addr, pc) {

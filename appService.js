@@ -78,7 +78,6 @@ async function testOracleConnection() {
 
 async function fetchListingsFromDb() {
     return await withOracleDB(async (connection) => {
-        console.log(loggedUser[3]);
         if (loggedUser[3] === 'seller') {
             const sellerEmail = loggedUser[1];
             const query = `
@@ -147,8 +146,66 @@ async function getPropertyDetails(listingId, addr, pc) {
             sEmail: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: sEmail }
         });
 
-        const result = propertyInfo.concat(realtorResult.rows[0]);
+        const PI = propertyInfo.concat(realtorResult.rows[0]);
+        let additionalInfo;
+        const propertyType = PI[7];
+        switch (propertyType) {
+            case 'House':
+                const Hquery = `
+                    SELECT YardSize, NumGarage, NumFloors, HasBasement
+                    FROM Houses 
+                    WHERE Address = :addr AND PostalCode = :pc
+                `;
 
+                const Hresult = await connection.execute(Hquery, {
+                    addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+                    pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+                });
+                additionalInfo = Hresult.rows[0];
+                break;
+            case 'Apartment':
+                const Aquery = `
+                    SELECT unitnumber
+                    FROM Apartments 
+                    WHERE Address = :addr AND PostalCode = :pc
+                `;
+
+                const Aresult = await connection.execute(Aquery, {
+                    addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+                    pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+                });
+                additionalInfo = Aresult.rows[0];
+                break;
+            case 'Townhouse':
+                const Tquery = `
+                    SELECT numgarage, numfloors, hoafee
+                    FROM Townhouses 
+                    WHERE Address = :addr AND PostalCode = :pc
+                `;
+
+                const Tresult = await connection.execute(Tquery, {
+                    addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+                    pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+                });
+                additionalInfo = Tresult.rows[0];
+                break;
+            default: //This MUST be condo
+                const Cquery = `
+                    SELECT hoafee, unitnumber
+                    FROM Condos 
+                    WHERE Address = :addr AND PostalCode = :pc
+                `;
+
+                const Cresult = await connection.execute(Cquery, {
+                    addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+                    pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+                });
+                additionalInfo = Cresult.rows[0];
+                break;
+        }
+
+        const result = PI.concat(additionalInfo);
+        console.log(result);
 
         return result;
     }).catch(() => {
@@ -156,6 +213,7 @@ async function getPropertyDetails(listingId, addr, pc) {
         return [];
     });
 }
+
 
 async function initiateDemotable() {
     return await withOracleDB(async (connection) => {
