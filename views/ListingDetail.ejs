@@ -41,6 +41,8 @@
     <a href="CreateOffer.html">
         <button type="button">Create Offer</button>
     </a>
+    <button type="button" id="appointmentButton">Book Appointment</button>
+
 </body>
 </html>
 
@@ -64,4 +66,8 @@
             document.getElementById('basement').textContent = "";
         }
     }
+    document.getElementById('appointmentButton').addEventListener('click', function() {
+        window.location.href = 'AppointmentForm.html';
+    });
+
 </script>
