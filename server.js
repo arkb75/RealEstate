@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const appController = require('./appController');
 
 // Load environment variables from .env file
@@ -8,6 +9,9 @@ const envVariables = loadEnvFile('./.env');
 
 const app = express();
 const PORT = envVariables.PORT || 65534;  // Adjust the PORT if needed (e.g., if you encounter a "port already occupied" error)
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // Serve the login page as the entry point
 app.get('/', (req, res) => {

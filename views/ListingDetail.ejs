@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listing Details</title>
+</head>
+<body>
+    <h1>Listing Details</h1>
+    <h2><%= property[4] %>, <%= property[5] %>, <%= property[6] %></h2>
+    <h2 id="price">Price: $<%= property[3] %></h2>
+    <p>Status: <%= property[1] %></p>
+    <p>Property Type:</p>
+    <p id="type"><%= property[7] %></p>
+    <p>Condition: <%= property[9] %></p>
+    <p>Baths: <%= property[10] %></p>
+    <p>Beds: <%= property[11] %></p>
+    <p>Year Built: <%= property[12] %></p>
+    <p>Interior Space: <%= property[13] %> sqft</p>
+    <p id="yard">Yard Space:</p>
+    <p><%= property[20] %></p>
+    <p id="garage">Garage: </p>
+    <p><%= property[21] %></p>
+    <p id="floors">Floors:</p>
+    <p><%= property[22] %></p>
+    <p id="basement">Basement:</p>
+    <p><%= property[23] %></p>
+    <h3>AMENITIES</h3>
+    <p><%= amenities[0][0] %></p>
+    <p><%= amenities[0][1] %></p>
+    <p>Distance: <%= amenities[0][2] %></p>
+    <p>Rating: <%= amenities[0][3] %></p>
+    <h3>REALTOR</h3>
+    <p><%= property[15] %></p>
+    <p><%= property[19] %></p>
+    <p>Proudly serving the community for <%= property[18] %> years!</p>
+    <h4>CONTACT</h4>
+    <p>Email: <%= property[16] %></p>
+    <p>Phone: <%= property[17] %></p>
+    <p> <%= user[0] %></p>
+    <p> <%= user[1] %></p>
+    <p> <%= user[2] %></p>
+</body>
+</html>
+
+<script>
+    window.onload = function() {
+        let type = document.getElementById('type').textContent;
+        if (type === "Townhouse") {
+            document.getElementById('yard').textContent = "Garage:";
+            document.getElementById('garage').textContent = "Floors:";
+            document.getElementById('floors').textContent = "Monthly HOA Fee:";
+            document.getElementById('basement').textContent = "";
+        } else if (type === "Condo") {
+            document.getElementById('yard').textContent = "Monthly HOA Fee:";
+            document.getElementById('garage').textContent = "Unit Number:";
+            document.getElementById('floors').textContent = "";
+            document.getElementById('basement').textContent = "";
+        } else if (type === "Apartment") {
+            document.getElementById('yard').textContent = "Unit Number:";
+            document.getElementById('garage').textContent = "";
+            document.getElementById('floors').textContent = "";
+            document.getElementById('basement').textContent = "";
+        }
+    }
+</script>

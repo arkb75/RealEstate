@@ -1,5 +1,6 @@
 const oracledb = require('oracledb');
 const loadEnvFile = require('./utils/envUtil');
+let loggedUser;
 
 const envVariables = loadEnvFile('./.env');
 
@@ -75,34 +76,144 @@ async function testOracleConnection() {
     });
 }
 
-async function fetchDemotableFromDb() {
+async function fetchListingsFromDb() {
     return await withOracleDB(async (connection) => {
-        const result = await connection.execute('SELECT ListingID, Address, PostalCode, ListingPrice, ListingStatus FROM LISTINGS');
-        return result.rows;
-    }).catch(() => {
-        return [];
-    });
+        if (loggedUser[3] === 'seller') {
+            const sellerEmail = loggedUser[1];
+            const query = `
+            SELECT ListingID, Address, PostalCode, ListingPrice, ListingStatus
+            FROM LISTINGS
+            WHERE SellerEmail = :sellerEmail
+        `;
+            const result = await connection.execute(query, {
+                sellerEmail: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: sellerEmail }
+            });
+            console.log(result.rows);
+            return result.rows;
+        } else {
+            return await withOracleDB(async (connection) => {
+                const result = await connection.execute('SELECT ListingID, Address, PostalCode, ListingPrice, ListingStatus FROM LISTINGS');
+                return result.rows;
+            }).catch(() => {
+                return [];
+            });
+        }
+    })
 }
 
 async function getPropertyDetails(listingId, addr, pc) {
     return await withOracleDB(async (connection) => {
-        const query = `
+        const propertyQuery = `
             SELECT *
             FROM PROPERTIES
             WHERE ADDRESS = :addr AND POSTALCODE = :pc
         `;
+        const listingQuery = `
+            SELECT ListingID, ListingStatus, SellerEmail, ListingPrice 
+            FROM LISTINGS 
+            WHERE Address = :addr AND PostalCode = :pc AND ListingID = :listingId
+        `;
 
-        const result = await connection.execute(query, {
+        const propertyResult = await connection.execute(propertyQuery, {
             addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
             pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
         });
-        console.log(result.rows);
-        return result.rows;
+
+        const listingResult = await connection.execute(listingQuery, {
+            addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+            pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc },
+            ListingID: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(listingId, 10) }
+        });
+
+
+        const LR = listingResult.rows[0];
+        const PR = propertyResult.rows[0];
+
+        const propertyInfo = LR.concat(PR);
+
+        const sEmail = propertyInfo[2];
+
+        const getRealtorInfo = `
+        SELECT * 
+        FROM REALTORS r
+        WHERE r.RealtorID IN
+            (SELECT RealtorID
+            FROM USERS 
+            WHERE Email = :sEmail)
+        `;
+
+        const realtorResult = await connection.execute(getRealtorInfo, {
+            sEmail: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: sEmail }
+        });
+
+        const PI = propertyInfo.concat(realtorResult.rows[0]);
+        let additionalInfo;
+        const propertyType = PI[7];
+        switch (propertyType) {
+            case 'House':
+                const Hquery = `
+                    SELECT YardSize, NumGarage, NumFloors, HasBasement
+                    FROM Houses 
+                    WHERE Address = :addr AND PostalCode = :pc
+                `;
+
+                const Hresult = await connection.execute(Hquery, {
+                    addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+                    pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+                });
+                additionalInfo = Hresult.rows[0];
+                break;
+            case 'Apartment':
+                const Aquery = `
+                    SELECT unitnumber
+                    FROM Apartments 
+                    WHERE Address = :addr AND PostalCode = :pc
+                `;
+
+                const Aresult = await connection.execute(Aquery, {
+                    addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+                    pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+                });
+                additionalInfo = Aresult.rows[0];
+                break;
+            case 'Townhouse':
+                const Tquery = `
+                    SELECT numgarage, numfloors, hoafee
+                    FROM Townhouses 
+                    WHERE Address = :addr AND PostalCode = :pc
+                `;
+
+                const Tresult = await connection.execute(Tquery, {
+                    addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+                    pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+                });
+                additionalInfo = Tresult.rows[0];
+                break;
+            default: //This MUST be condo
+                const Cquery = `
+                    SELECT hoafee, unitnumber
+                    FROM Condos 
+                    WHERE Address = :addr AND PostalCode = :pc
+                `;
+
+                const Cresult = await connection.execute(Cquery, {
+                    addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+                    pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+                });
+                additionalInfo = Cresult.rows[0];
+                break;
+        }
+
+        const result = PI.concat(additionalInfo);
+        console.log(result);
+
+        return result;
     }).catch(() => {
         console.log("uh oh stinky");
         return [];
     });
 }
+
 
 async function initiateDemotable() {
     return await withOracleDB(async (connection) => {
@@ -169,6 +280,7 @@ async function authenticateUser(email, password) {
         });
 
         if (result.rows.length > 0) {
+            loggedUser = result.rows[0];
             return { success: true, user: result.rows[0] };
         } else {
             return { success: false, message: 'Invalid email' };
@@ -244,18 +356,39 @@ async function createAppointment(status, realtorID, date, time, buyerEmail, meet
     });
 }
 
+async function getAmenities(addr, pc) {
+    return await withOracleDB(async (connection) => {
+        const query = `
+            SELECT *
+            FROM AMENITIES
+            WHERE PropertyPostalCode = :pc AND PropertyAddress = :addr
+        `;
+        const result = await connection.execute(query, {
+            addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+            pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+        });
+        return result.rows;
+    })
+}
+
+function getLoggedUser() {
+    return loggedUser;
+}
 
 
 
 module.exports = {
     getPropertyDetails,
     testOracleConnection,
-    fetchDemotableFromDb,
+    fetchListingsFromDb,
     initiateDemotable, 
     insertDemotable, 
     updateNameDemotable,
     authenticateUser,
     registerUser,
     countDemotable,
-    createAppointment
+    createAppointment,
+    getLoggedUser,
+    getAmenities
+    countDemotable,
 };
