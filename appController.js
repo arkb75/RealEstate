@@ -26,26 +26,34 @@ router.get('/ListingDetail', async (req, res) => {
     const listingId = req.query.lid;
     const addr = req.query.address;
     const pc = req.query.postalCode;
-    // console.log(listingId);
-    // console.log(addr);
-    // console.log(pc);
 
 
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
+<<<<<<< HEAD
     const loggedUser = await appService.getLoggedUser();
     const getAmenities = await appService.getAmenities(addr, pc);
     res.render('ListingDetail', {
         property: propertyDetails,
         user: loggedUser,
         amenities: getAmenities});
+=======
+    res.render('ListingDetail', {
+        property: propertyDetails});
+>>>>>>> 7c46030 (Partial create offer page)
 });
 
-// // GET route for the login page
-// router.get('/login', (req, res) => {
-//     res.sendFile('login.html', { root: './public' });
-// });
+router.get('/offer-details', async (req, res) => {
+    const loggedUser = await appService.getLoggedUser();
+    console.log(loggedUser[1]);
+    const offerDetails = {
+        offerDate: new Date().toISOString().split('T')[0],
+        offerExpiryDate: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString().split('T')[0],
+        buyerEmail: 'example@example.com',  // replace with actual data
+        listingID: 1,                       // replace with actual data
+    };
+    res.json(offerDetails);
+});
 
-// POST route for handling login
 router.post('/login', async (req, res) => {
     const { email } = req.body;
 

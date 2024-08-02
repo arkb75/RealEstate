@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Offer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>Create Offer</h1>
+<form id="offerForm">
+    <label for="buyerEmail">Buyer Email:</label>
+    <input type="email" id="buyerEmail" name="buyerEmail" required>
+
+    <label for="listingID">Listing ID:</label>
+    <input type="number" id="listingID" name="listingID" required>
+
+    <label for="offerAmount">Offer Amount:</label>
+    <input type="number" id="offerAmount" name="offerAmount" required>
+
+    <label for="offerDate">Offer Date:</label>
+    <input type="date" id="offerDate" name="offerDate" required readonly>
+
+    <label for="offerExpiryDate">Offer Expiry Date:</label>
+    <input type="date" id="offerExpiryDate" name="offerExpiryDate" required readonly>
+
+    <button type="submit">Submit Offer</button>
+</form>
+<p>Back to <a href="ListingDetail.ejs">Listing Details</a></p>
+
+<script>
+    document.getElementById('offerForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const buyerEmail = document.getElementById('buyerEmail').value;
+        const listingID = document.getElementById('listingID').value;
+        const offerAmount = document.getElementById('offerAmount').value;
+        const offerDate = document.getElementById('offerDate').value;
+        const offerExpiryDate = document.getElementById('offerExpiryDate').value;
+
+        try {
+            const response = await fetch('/create-offer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ buyerEmail, listingID, offerAmount, offerDate, offerExpiryDate })
+            });
+
+            if (!response.ok) {
+                throw new Error('Offer submission failed');
+            }
+
+            const result = await response.json();
+            alert(result.message);
+        } catch (error) {
+            alert('Offer submission failed: ' + error.message);
+        }
+    });
+
+    // Set offer date to today and expiry date to 30 days from today
+    const today = new Date();
+    const thirtyDaysFromToday = new Date();
+    thirtyDaysFromToday.setDate(today.getDate() + 30);
+
+    const formatDateString = (date) => {
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    document.getElementById('offerDate').value = formatDateString(today);
+    document.getElementById('offerExpiryDate').value = formatDateString(thirtyDaysFromToday);
+</script>
+</body>
+</html>
