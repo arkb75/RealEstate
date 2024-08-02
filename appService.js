@@ -389,6 +389,5 @@ module.exports = {
     countDemotable,
     createAppointment,
     getLoggedUser,
-    getAmenities
-    countDemotable,
+    getAmenities,
 };
