@@ -30,14 +30,14 @@ router.get('/ListingDetail', async (req, res) => {
 
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
     const loggedUser = await appService.getLoggedUser();
-    const getAmenities = await appService.getAmenities(addr, pc);
+    // const getAmenities = await appService.getAmenities(addr, pc);
+    // console.log(getAmenities);
     res.render('ListingDetail', {
         property: propertyDetails,
-        user: loggedUser,
-        amenities: getAmenities});
+        user: loggedUser});
 
-    res.render('ListingDetail', {
-        property: propertyDetails});
+    // res.render('ListingDetail', {
+    //     property: propertyDetails});
 });
 
 router.get('/offer-details', async (req, res) => {
@@ -130,7 +130,15 @@ router.post('/register', async (req, res) => {
 });
 
 router.get('/listings', async (req, res) => {
-    const tableContent = await appService.fetchListingsFromDb();
+    const propType = req.query.propType;
+    const minYear = req.query.minYear;
+    const minPrice = req.query.minPrice;
+    const maxPrice = req.query.maxPrice;
+    const minBed = req.query.minBed;
+    const minBath = req.query.minBath;
+    const minSpace = req.query.minSpace;
+    const maxSpace = req.query.maxSpace;
+    const tableContent = await appService.fetchListingsFromDb(minPrice, maxPrice, minBed, minBath, propType, minSpace, maxSpace, minYear);
     res.json({data: tableContent});
 });
 

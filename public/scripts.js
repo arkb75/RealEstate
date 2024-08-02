@@ -37,21 +37,28 @@ async function checkDbConnection() {
 }
 
 // Fetches data from the demotable and displays it.
-async function fetchAndDisplayListings() {
+async function fetchAndDisplayListings(minPrice, maxPrice, minBed, minBath, propType, minSpace, maxSpace, maxAge) {
     // const tableElement = document.getElementById('demotable');
     // const tableBody = tableElement.querySelector('tbody');
     const alllistingscontainer = document.getElementById('listings');
 
+    const minBuiltYear = new Date().getFullYear() - maxAge;
 
-    const response = await fetch('/listings', {
+
+    // window.location.href = `/ListingDetail?lid=${listingID}&address=${encodedAddr}&postalCode=${encodedPC}`;
+
+    const response = await fetch(`/listings?minPrice=${minPrice}&maxPrice=${maxPrice}&minBed=${minBed}&minBath=${minBath}&propType=${propType}&minSpace=${minSpace}&maxSpace=${maxSpace}&minYear=${minBuiltYear}`, {
         method: 'GET'
     });
 
     const responseData = await response.json();
     const listingContent = responseData.data;
 
+    if (listingContent.length <= 0) {
+        alert("No listings match your criteria!");
+    }
+
     listingContent.forEach(listing => {
-        console.log(listing);
         const listingContainer = document.createElement('div');
         listingContainer.className = 'listing-container';
         const id = document.createElement('h3');
@@ -80,11 +87,6 @@ async function fetchAndDisplayListings() {
         listingContainer.appendChild(detailsBtn);
         alllistingscontainer.appendChild(listingContainer);
     })
-
-    const r = await fetch('/getLoggedUser', {
-        method: 'GET'
-    });
-    console.log(r);
 
 }
 
@@ -188,7 +190,26 @@ function showListingDetails(listingID, addr, pc) {
 // }
 
 
+function toggleFilters() {
+    let filters = document.getElementById('filters');
+    let btn = document.getElementById('showFilters');
 
+    if (filters.style.display === 'none') {
+        filters.style.display = 'block';
+        btn.textContent = 'Hide Filters';
+    } else {
+        filters.style.display = 'none';
+        btn.textContent = 'Show Filters';
+    }
+}
+
+function handleFilters() {
+    let listings = document.getElementById('listings');
+    while (listings.firstChild) {
+        listings.removeChild(listings.firstChild);
+    }
+    fetchListingData();
+}
 
 // ---------------------------------------------------------------
 // Initializes the webpage functionalities.
@@ -197,19 +218,8 @@ window.onload = function() {
     checkDbConnection();
     fetchListingData();
     document.getElementById('filters').style.display = 'none';
-    document.getElementById('showFilters').addEventListener("click", function() {
-        let filters = document.getElementById('filters');
-        let btn = document.getElementById('showFilters');
-
-        if (filters.style.display === 'none') {
-            filters.style.display = 'block';
-            btn.textContent = 'Hide Filters';
-        } else {
-            filters.style.display = 'none';
-            btn.textContent = 'Show Filters';
-        }
-    });
-
+    document.getElementById('showFilters').addEventListener("click", toggleFilters);
+    document.getElementById('applyFiltersBtn').addEventListener("click", handleFilters);
     // document.getElementById("resetDemotable").addEventListener("click", resetDemotable);
     // document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
     // document.getElementById("updataNameDemotable").addEventListener("submit", updateNameDemotable);
@@ -219,5 +229,13 @@ window.onload = function() {
 // General function to refresh the displayed table data. 
 // You can invoke this after any table-modifying operation to keep consistency.
 function fetchListingData() {
-    fetchAndDisplayListings();
+    const minPrice = document.getElementById('minPrice').value;
+    const maxPrice = document.getElementById('maxPrice').value;
+    const minBed = document.getElementById('minBed').value;
+    const minBath = document.getElementById('minBath').value;
+    const propType = document.getElementById('propType').value;
+    const minSpace = document.getElementById('minSpace').value;
+    const maxSpace = document.getElementById('maxSpace').value;
+    const maxAge = document.getElementById('maxAge').value;
+    fetchAndDisplayListings(minPrice, maxPrice, minBed, minBath, propType, minSpace, maxSpace, maxAge);
 }

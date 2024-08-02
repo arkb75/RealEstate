@@ -76,23 +76,62 @@ async function testOracleConnection() {
     });
 }
 
-async function fetchListingsFromDb() {
+// TODO: handle property types too!!!!
+async function fetchListingsFromDb(minPrice, maxPrice, minBed, minBath, propType, minSpace, maxSpace, minYear) {
     return await withOracleDB(async (connection) => {
         if (loggedUser[3] === 'seller') {
             const sellerEmail = loggedUser[1];
             const query = `
-            SELECT ListingID, Address, PostalCode, ListingPrice, ListingStatus
-            FROM LISTINGS
-            WHERE SellerEmail = :sellerEmail
+            SELECT ListingID, l.Address, City, Province, ListingPrice, ListingStatus, NumBaths, NumBeds
+            FROM PROPERTIES p, LISTINGS l
+            WHERE SellerEmail = :sellerEmail AND 
+                  p.Address = l.Address AND
+                  p.PostalCode = l.PostalCode AND
+                  ListingPrice >= :minPrice AND 
+                  ListingPrice <= :maxPrice AND
+                  NumBaths >= :minBath AND
+                  NumBeds >= :minBed AND
+                  InteriorSpace >= :minSpace AND
+                  InteriorSpace <= :maxSpace AND
+                  YearBuilt >= :minYear
         `;
             const result = await connection.execute(query, {
-                sellerEmail: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: sellerEmail }
+                sellerEmail: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: sellerEmail },
+                minPrice: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minPrice, 10)},
+                maxPrice: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(maxPrice, 10)},
+                minBath: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minBath, 10)},
+                minBed: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minBed, 10)},
+                minSpace: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minSpace, 10)},
+                maxSpace: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(maxSpace, 10)},
+                minYear: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minYear, 10)}
             });
+
             console.log(result.rows);
             return result.rows;
         } else {
             return await withOracleDB(async (connection) => {
-                const result = await connection.execute('SELECT ListingID, Address, PostalCode, ListingPrice, ListingStatus FROM LISTINGS');
+                const query = `
+                SELECT ListingID, l.Address, City, Province, ListingPrice, ListingStatus, NumBaths, NumBeds
+                FROM PROPERTIES p, LISTINGS l
+                WHERE p.Address = l.Address AND
+                  p.PostalCode = l.PostalCode AND
+                  ListingPrice >= :minPrice AND 
+                  ListingPrice <= :maxPrice AND
+                  NumBaths >= :minBath AND
+                  NumBeds >= :minBed AND
+                  InteriorSpace >= :minSpace AND
+                  InteriorSpace <= :maxSpace AND
+                  YearBuilt >= :minYear
+        `;
+                const result = await connection.execute(query, {
+                    minPrice: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minPrice, 10)},
+                    maxPrice: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(maxPrice, 10)},
+                    minBath: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minBath, 10)},
+                    minBed: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minBed, 10)},
+                    minSpace: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minSpace, 10)},
+                    maxSpace: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(maxSpace, 10)},
+                    minYear: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: parseInt(minYear, 10)}
+                });
                 return result.rows;
             }).catch(() => {
                 return [];
@@ -247,7 +286,6 @@ async function getPropertyDetails(listingId, addr, pc) {
         }
 
         const result = PI.concat(additionalInfo);
-        console.log(result);
 
         return result;
     }).catch(() => {
