@@ -356,6 +356,21 @@ async function createAppointment(status, realtorID, date, time, buyerEmail, meet
     });
 }
 
+async function getAmenities(addr, pc) {
+    return await withOracleDB(async (connection) => {
+        const query = `
+            SELECT *
+            FROM AMENITIES
+            WHERE PropertyPostalCode = :pc AND PropertyAddress = :addr
+        `;
+        const result = await connection.execute(query, {
+            addr: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: addr },
+            pc: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: pc }
+        });
+        return result.rows;
+    })
+}
+
 function getLoggedUser() {
     return loggedUser;
 }
@@ -371,5 +386,6 @@ module.exports = {
     registerUser,
     countDemotable,
     createAppointment,
-    getLoggedUser
+    getLoggedUser,
+    getAmenities
 };

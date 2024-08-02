@@ -33,17 +33,11 @@ router.get('/ListingDetail', async (req, res) => {
 
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
     const loggedUser = await appService.getLoggedUser();
-    const propertyType = propertyDetails[7];
+    const getAmenities = await appService.getAmenities(addr, pc);
     res.render('ListingDetail', {
         property: propertyDetails,
-        user: loggedUser});
-
-    // res.render('ListingDetail', {
-    //     property: propertyDetails,
-    //     address: addr,
-    //     postalCode: pc,
-    //
-    // });
+        user: loggedUser,
+        amenities: getAmenities});
 });
 
 // // GET route for the login page
