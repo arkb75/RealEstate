@@ -328,6 +328,95 @@ async function insertDemotable(id, name) {
     });
 }
 
+async function insertListing(addr, pCode, city, prov, price, propType, propCond, nBeds, nBaths, yBuilt, space, ySpace, hGarage, hFloors, basement, tGarage, tFloors, tFee, cFee, cNum, aNum) {
+    return await withOracleDB(async (connection) => {
+        const userType = loggedUser[3];
+        const res = await connection.execute(
+            `INSERT INTO PROPERTIES(Address, City, Province, PropertyType, PostalCode, PropertyCondition, NumBaths, NumBeds, YearBuilt, InteriorSpace)
+                VALUES
+                (:addr, :city, :prov, :propType, :pCode, :propCond, :nBaths, :nBeds, :yBuilt, :space)`,
+                [addr, city, prov, propType, pCode, propCond, nBaths, nBeds, yBuilt, space],
+                { autoCommit: true }
+        );
+        let typeResult;
+        if (propType === "Apartment") {
+            typeResult = await connection.execute(
+                `INSERT INTO APARTMENTS(address, postalcode, unitnumber)
+                    VALUES
+                    (:addr, :pCode, :aNum)`,
+                [addr, pCode, aNum],
+                { autoCommit: true }
+            );
+        } else if (propType === "Condo") {
+            typeResult = await connection.execute(
+                `INSERT INTO CONDOS(address, postalcode, hoafee, unitnumber)
+                 VALUES
+                     (:addr, :pCode, :cFee, :cNum);`,
+                [addr, pCode, cFee, cNum],
+                { autoCommit: true }
+            );
+        } else if (propType === "Townhouse") {
+            typeResult = await connection.execute(
+                `INSERT INTO TOWNHOUSES(address, postalcode, numgarage, numfloors, hoafee)
+                 VALUES
+                     (:addr, :pCode, :tGarage, :tFloors, :tFee)`,
+                [addr, pCode, tGarage, tFloors, tFee],
+                { autoCommit: true }
+            );
+        } else { // this MUST be House
+            typeResult = await connection.execute(
+                `INSERT INTO HOUSES(Address, PostalCode, YardSize, NumGarage, NumFloors, HasBasement)
+                 VALUES
+                     (:addr, :pCode, :ySpace, :hGarage, :hFloors, :basement)`,
+                [addr, pCode, ySpace, hGarage, hFloors, basement],
+                { autoCommit: true }
+            );
+        }
+
+        // get next listingID, get today's date, get today's date + 30 (YYYY-MM-DD)
+
+        const todayDate = getDate(0);
+        const expDate = getDate(1);
+        const email = loggedUser[1];
+
+        const getMaxListingIdQuery = `SELECT NVL(MAX(ListingID), 0) + 1 AS NextListingID FROM LISTINGS`;
+        const maxListingIdResult = await connection.execute(getMaxListingIdQuery);
+        const nextListingID = maxListingIdResult.rows[0][0];
+
+
+        const listingResult = await connection.execute(
+            `INSERT INTO LISTINGS (ListingID, Address, PostalCode, ListingStatus, SellerEmail, ListingPrice, ExpirationDate, ListingDate)
+             VALUES
+                 (:nextListingID, :addr, :pCode, 'Active', :email, :price, :expDate, :todayDate)`,
+            [nextListingID, addr, pCode, email, price, expDate, todayDate],
+            { autoCommit: true }
+        );
+
+
+        return res.rowsAffected && res.rowsAffected > 0 && typeResult.rowsAffected && typeResult.rowsAffected > 0 && listingResult.rowsAffected && listingResult.rowsAffected > 0;
+    }).catch(() => {
+        return false;
+    });
+}
+
+function getDate(addThirty) {
+    if (addThirty) {
+        let expDate = new Date();
+        expDate.setDate(expDate.getDate() + 30);
+        const year = expDate.getFullYear();
+        const month = String(expDate.getMonth() + 1).padStart(2, '0');
+        const day = String(expDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    } else {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+}
+
+
 async function updateNameDemotable(oldName, newName) {
     return await withOracleDB(async (connection) => {
         const result = await connection.execute(
@@ -516,6 +605,7 @@ module.exports = {
     getLoggedUser,
     getAppointments,
     cancelAppointment,
-    createOffer
+    createOffer,
+    insertListing
 };
 

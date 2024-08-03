@@ -21,6 +21,10 @@ router.get('/getLoggedUser', async (req, res) => {
 });
 
 
+router.get('/create-listing', async (req, res) => {
+    console.log("helloooo");
+});
+
 
 router.get('/ListingDetail', async (req, res) => {
     const listingId = req.query.lid;
@@ -158,6 +162,17 @@ router.post("/insert-demotable", async (req, res) => {
         res.status(500).json({ success: false });
     }
 });
+
+
+router.post('/insert-listing', async (req, res) => {
+    const {addr, pCode, city, prov, price, propType, propCond, nBeds, nBaths, yBuilt, space, ySpace, hGarage, hFloors, basement, tGarage, tFloors, tFee, cFee, cNum, aNum} = req.body;
+    const listingInsertResult = await appService.insertListing(addr, pCode, city, prov, price, propType, propCond, nBeds, nBaths, yBuilt, space, ySpace, hGarage, hFloors, basement, tGarage, tFloors, tFee, cFee, cNum, aNum);
+    if (listingInsertResult) {
+        res.json({success: true});
+    } else {
+        res.status(500).json({success: false});
+    }
+})
 
 router.post("/update-name-demotable", async (req, res) => {
     const { oldName, newName } = req.body;
