@@ -146,8 +146,6 @@ async function createOffer(offerAmount, buyerEmail, offerDate, offerExpiryDate, 
 
         const nextOfferID = maxOfferIdResult.rows[0][0];
 
-        console.log('Next OfferID:', nextOfferID);
-
         const insertQuery = `
             INSERT INTO OFFERS (
                 OfferID, OfferStatus, OfferDate, OfferAmount, BuyerEmail, OfferExpiryDate, ListingID, Address, PostalCode
@@ -181,6 +179,41 @@ async function createOffer(offerAmount, buyerEmail, offerDate, offerExpiryDate, 
         return { success: false, message: 'Failed to create offer' };
     });
 }
+async function fetchOffersForListing(listingID) {
+    return await withOracleDB(async (connection) => {
+        console.log(listingID);
+        const query = `
+            SELECT OfferID, OfferStatus, OfferDate, OfferAmount, BuyerEmail, OfferExpiryDate, ListingID, Address, PostalCode
+            FROM OFFERS
+            WHERE ListingID = :listingID
+        `;
+        const result = await connection.execute(query, {
+            listingID: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: listingID }
+        });
+        console.log(listingID);
+        return result.rows;
+    }).catch(() => {
+        return [];
+    });
+}
+//
+// async function updateOfferStatus(offerID, status) {
+//     return await withOracleDB(async (connection) => {
+//         const query = `
+//             UPDATE OFFERS
+//             SET OfferStatus = :status
+//             WHERE OfferID = :offerID
+//         `;
+//         const result = await connection.execute(query, {
+//             status: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: status },
+//             offerID: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: offerID }
+//         }, { autoCommit: true });
+//
+//         return result.rowsAffected && result.rowsAffected > 0;
+//     }).catch(() => {
+//         return false;
+//     });
+// }
 async function getPropertyDetails(listingId, addr, pc) {
     return await withOracleDB(async (connection) => {
         const propertyQuery = `
@@ -611,5 +644,6 @@ module.exports = {
     cancelAppointment,
     createOffer,
     insertListing
+    fetchOffersForListing,
+    // updateOfferStatus
 };
-

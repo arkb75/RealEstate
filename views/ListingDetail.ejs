@@ -33,10 +33,12 @@
     <h4>CONTACT</h4>
     <p>Email: <%= property[16] %></p>
     <p>Phone: <%= property[17] %></p>
-    <a href="CreateOffer.html">
-        <button type="button">Create Offer</button>
-    </a>
-    <button type="button" id="appointmentButton">Book Appointment</button>
+
+    <% if (user[3] === 'buyer') { %>
+        <button onclick="window.location.href='CreateOffer.html'">Create Offer</button>
+    <% } else if (user[3] === 'seller') { %>
+        <button onclick="window.location.href='ViewOffers.html'">View Offers</button>
+    <% } %>
 
 </body>
 </html>
@@ -61,8 +63,4 @@
             document.getElementById('basement').textContent = "";
         }
     }
-    document.getElementById('appointmentButton').addEventListener('click', function() {
-        window.location.href = 'AppointmentForm.html';
-    });
-
 </script>

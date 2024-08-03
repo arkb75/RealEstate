@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Offers</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>View Offers</h1>
+
+<div id="offerDetails">
+    <label for="buyerEmail">Buyer Email:</label>
+    <input type="email" id="buyerEmail" name="buyerEmail" readonly>
+
+    <label for="listingID">Listing ID:</label>
+    <input type="number" id="listingID" name="listingID" readonly>
+
+    <label for="offerAmount">Offer Amount:</label>
+    <input type="number" id="offerAmount" name="offerAmount" readonly>
+
+    <label for="offerStatus">Offer Status:</label>
+    <input type="text" id="offerStatus" name="offerStatus" readonly>
+
+    <label for="offerDate">Offer Date:</label>
+    <input type="date" id="offerDate" name="offerDate" readonly>
+
+    <label for="offerExpiryDate">Offer Expiry Date:</label>
+    <input type="date" id="offerExpiryDate" name="offerExpiryDate" readonly>
+
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address" readonly>
+
+    <label for="postalCode">Postal Code:</label>
+    <input type="text" id="postalCode" name="postalCode" readonly>
+</div>
+
+<div id="offerControls">
+    <button id="acceptOffer">Accept</button>
+    <button id="rejectOffer">Reject</button>
+    <button id="nextOffer">Next</button>
+</div>
+
+<p>Back to <a href="ListingDetail.html">Listing Details</a></p>
+
+<script>
+    let currentOfferIndex = 0;
+    let offers = [];
+
+    async function loadOffers() {
+        try {
+            const response = await fetch('/offers?listingID=1'); // Replace with dynamic listing ID
+            offers = await response.json();
+            if (offers.length > 0) {
+                displayOffer(offers[currentOfferIndex]);
+            }
+        } catch (error) {
+            console.error('Error loading offers:', error);
+            alert('Failed to load offers.');
+        }
+    }
+
+    function displayOffer(offer) {
+        document.getElementById('buyerEmail').value = offer.buyerEmail;
+        document.getElementById('listingID').value = offer.listingID;
+        document.getElementById('offerAmount').value = offer.offerAmount;
+        document.getElementById('offerStatus').value = offer.offerStatus;
+        document.getElementById('offerDate').value = offer.offerDate;
+        document.getElementById('offerExpiryDate').value = offer.offerExpiryDate;
+        document.getElementById('address').value = offer.address;
+        document.getElementById('postalCode').value = offer.postalCode;
+    }
+
+    document.getElementById('acceptOffer').addEventListener('click', async () => {
+        await updateOfferStatus('Accepted');
+    });
+
+    document.getElementById('rejectOffer').addEventListener('click', async () => {
+        await updateOfferStatus('Rejected');
+    });
+
+    document.getElementById('nextOffer').addEventListener('click', () => {
+        currentOfferIndex = (currentOfferIndex + 1) % offers.length;
+        displayOffer(offers[currentOfferIndex]);
+    });
+
+    async function updateOfferStatus(status) {
+        const offer = offers[currentOfferIndex];
+        try {
+            const response = await fetch(`/update-offer-status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ offerID: offer.offerID, status })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update offer status');
+            }
+
+            const result = await response.json();
+            alert(result.message);
+            offer.offerStatus = status; // Update local offer status
+            displayOffer(offer); // Refresh display
+        } catch (error) {
+            console.error('Error updating offer status:', error);
+            alert('Failed to update offer status.');
+        }
+    }
+
+    // Initialize offers on page load
+    loadOffers();
+</script>
+</body>
+</html>
