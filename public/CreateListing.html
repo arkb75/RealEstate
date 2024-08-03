@@ -6,6 +6,7 @@
     <title>Create Listing</title>
 </head>
 <body>
+<a href="index.html">View my Listings</a>
 <h1>Create a Listing</h1>
         <label for="addr">Street Address:</label>
         <input type="text" id="addr" name="addr" value="" required>
@@ -173,9 +174,9 @@
         const statusMessage = document.getElementById('submission-status');
 
         if (responseData.success) {
-            statusMessage.textContent = "LFGGGG THIS WORKKKSSS";
+            statusMessage.textContent = "Property added successfully!";
         } else {
-            statusMessage.textContent = "Error, could not create listing for this property";
+            statusMessage.textContent = "ERROR, could not create a listing for this property";
         }
 
     }

@@ -20,11 +20,11 @@ router.get('/getLoggedUser', async (req, res) => {
     return loggedUser;
 });
 
-
-router.get('/create-listing', async (req, res) => {
-    console.log("helloooo");
+router.get('/getUserType', async (req, res) => {
+    const loggedUser = await appService.getLoggedUser();
+    const userType = loggedUser[3];
+    res.json({uType: userType});
 });
-
 
 router.get('/ListingDetail', async (req, res) => {
     const listingId = req.query.lid;

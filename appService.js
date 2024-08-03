@@ -331,6 +331,7 @@ async function insertDemotable(id, name) {
 async function insertListing(addr, pCode, city, prov, price, propType, propCond, nBeds, nBaths, yBuilt, space, ySpace, hGarage, hFloors, basement, tGarage, tFloors, tFee, cFee, cNum, aNum) {
     return await withOracleDB(async (connection) => {
         const userType = loggedUser[3];
+        // CREATE PROPERTIES ENTRY
         const res = await connection.execute(
             `INSERT INTO PROPERTIES(Address, City, Province, PropertyType, PostalCode, PropertyCondition, NumBaths, NumBeds, YearBuilt, InteriorSpace)
                 VALUES
@@ -339,6 +340,8 @@ async function insertListing(addr, pCode, city, prov, price, propType, propCond,
                 { autoCommit: true }
         );
         let typeResult;
+
+        // CREATE ISA SUBTYPE OF PROPERTIES ENTRY
         if (propType === "Apartment") {
             typeResult = await connection.execute(
                 `INSERT INTO APARTMENTS(address, postalcode, unitnumber)
@@ -373,12 +376,12 @@ async function insertListing(addr, pCode, city, prov, price, propType, propCond,
             );
         }
 
-        // get next listingID, get today's date, get today's date + 30 (YYYY-MM-DD)
-
+        // get next listingID, get today's date, get today's date + 30 in (YYYY-MM-DD)
         const todayDate = getDate(0);
         const expDate = getDate(1);
         const email = loggedUser[1];
 
+        // get next listingID number
         const getMaxListingIdQuery = `SELECT NVL(MAX(ListingID), 0) + 1 AS NextListingID FROM LISTINGS`;
         const maxListingIdResult = await connection.execute(getMaxListingIdQuery);
         const nextListingID = maxListingIdResult.rows[0][0];
@@ -391,6 +394,7 @@ async function insertListing(addr, pCode, city, prov, price, propType, propCond,
             [nextListingID, addr, pCode, email, price, expDate, todayDate],
             { autoCommit: true }
         );
+
 
 
         return res.rowsAffected && res.rowsAffected > 0 && typeResult.rowsAffected && typeResult.rowsAffected > 0 && listingResult.rowsAffected && listingResult.rowsAffected > 0;

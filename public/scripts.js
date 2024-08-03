@@ -123,11 +123,27 @@ function handleFilters() {
     fetchListingData();
 }
 
+ async function checkUserType(){
+     const response = await fetch(`/getUserType`, {
+         method: 'GET'
+     });
+
+     const res = await response.json();
+     const userType = res.uType;
+     if (userType === 'buyer') {
+         document.getElementById('create-listing-link').style.display = "none";
+     } else {
+         document.getElementById('create-listing-link').style.display = "block";
+     }
+ }
+
+
 // ---------------------------------------------------------------
 // Initializes the webpage functionalities.
 // Add or remove event listeners based on the desired functionalities.
 window.onload = function() {
     checkDbConnection();
+    checkUserType();
     fetchListingData();
     document.getElementById('filters').style.display = 'none';
     document.getElementById('showFilters').addEventListener("click", toggleFilters);
