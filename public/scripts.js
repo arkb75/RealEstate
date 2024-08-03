@@ -132,6 +132,7 @@ window.onload = function() {
     document.getElementById('filters').style.display = 'none';
     document.getElementById('showFilters').addEventListener("click", toggleFilters);
     document.getElementById('applyFiltersBtn').addEventListener("click", handleFilters);
+
     // document.getElementById("resetDemotable").addEventListener("click", resetDemotable);
     // document.getElementById("insertDemotable").addEventListener("submit", insertDemotable);
     // document.getElementById("updataNameDemotable").addEventListener("submit", updateNameDemotable);

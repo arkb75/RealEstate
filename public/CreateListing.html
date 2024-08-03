@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+    <title>Create Listing</title>
+</head>
+<body>
+<h1>Create a Listing</h1>
+    <form>
+        <label for="addr">Street Address:</label>
+        <input type="text" id="addr" name="addr" value="" required>
+        <br>
+        <label for="pc">Postal Code:</label>
+        <input type="text" id="pc" name="pc" value="" required>
+        <br>
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" value="" required>
+        <br>
+        <label for="prov">Province:</label>
+        <select id="prov" name="prov">
+            <option value="BC">BC</option>
+            <option value="AB">AB</option>
+            <option value="QC">QC</option>
+            <option value="ON">ON</option>
+            <option value="PEI">PEI</option>
+            <option value="NS">NS</option>
+            <option value="NB">NB</option>
+            <option value="MB">MB</option>
+            <option value="SK">SK</option>
+            <option value="NL">NL</option>
+            <option value="YT">YT</option>
+            <option value="NT">NT</option>
+            <option value="NU">NU</option>
+        </select>
+        <br>
+        <label for="price">City:</label>
+        <input type="text" id="price" name="price" value="" required>
+        <br>
+        <label for="propType">Property Type:</label>
+        <select id="propType" name="propType">
+            <option value="House">House</option>
+            <option value="Townhouse">Town House</option>
+            <option value="Condo">Condo</option>
+            <option value="Apartment">Apartment</option>
+        </select>
+        <br>
+        <label for="propCond">Property Condition:</label>
+        <select id="propCond" name="propCond">
+            <option value="Excellent">Excellent</option>
+            <option value="Good">Good</option>
+            <option value="Fair">Fair</option>
+            <option value="Bad">Bad</option>
+        </select>
+        <br>
+        <label for="numBaths">Baths:</label>
+        <input type="number" id="numBaths" name="numBaths" value="0" required>
+        <br>
+        <label for="numBeds">Beds:</label>
+        <input type="number" id="numBeds" name="numBeds" value="0" required>
+        <br>
+        <label for="yBuilt">Year Built:</label>
+        <input type="number" id="yBuilt" name="yBuilt" value="2024" required>
+        <br>
+        <label for="space">Interior Space:</label>
+        <input type="number" id="space" name="space" value="0" required>
+        <br>
+        <div id="house-specific">
+            <label for="yardSpace">Yard Space:</label>
+            <input type="number" id="yardSpace" name="yardSpace" value="0" required>
+            <br>
+            <label for="hGarage">Number of garage:</label>
+            <input type="number" id="hGarage" name="hGarage" value="0" required>
+            <br>
+            <label for="hFloors">Number of floors:</label>
+            <input type="number" id="hFloors" name="cFloors" value="1" required>
+            <br>
+            <label for="basement">Basement:</label>
+            <select id="basement" name="basement">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+            <br>
+        </div>
+        <div id="townhouse-specific">
+            <label for="tGarage">Number of garage:</label>
+            <input type="number" id="tGarage" name="tGarage" value="0" required>
+            <br>
+            <label for="tFloors">Number of floors:</label>
+            <input type="number" id="tFloors" name="tFloors" value="1" required>
+            <br>
+            <label for="tFee">Monthly HOA Fee:</label>
+            <input type="number" id="tFee" name="tFee" value="0" required>
+            <br>
+        </div>
+        <div id="condo-specific">
+            <label for="cFee">Monthly HOA Fee:</label>
+            <input type="number" id="cFee" name="cFee" value="0" required>
+            <br>
+            <label for="cNum">Unit Number:</label>
+            <input type="number" id="cNum" name="cNum" value="0" required>
+            <br>
+        </div>
+        <div id="apartment-specific">
+            <label for="aNum">Unit Number:</label>
+            <input type="number" id="aNum" name="aNum" value="0" required>
+            <br>
+        </div>
+    </form>
+<script>
+    window.onload = function () {
+        document.getElementById('townhouse-specific').style.display = "none";
+        document.getElementById('condo-specific').style.display = "none";
+        document.getElementById('apartment-specific').style.display = "none";
+    }
+
+    document.getElementById('propType').addEventListener("change", function() {
+        const selection = document.getElementById('propType').value;
+        switch (selection) {
+            case "Townhouse":document.getElementById('townhouse-specific').style.display = "none";
+                document.getElementById('condo-specific').style.display = "none";
+                document.getElementById('townhouse-specific').style.display = "block";
+                document.getElementById('house-specific').style.display = "none";
+                document.getElementById('apartment-specific').style.display = "none";
+                break;
+            case "Condo":
+                document.getElementById('condo-specific').style.display = "block";
+                document.getElementById('townhouse-specific').style.display = "none";
+                document.getElementById('house-specific').style.display = "none";
+                document.getElementById('apartment-specific').style.display = "none";
+                break;
+            case "Apartment":
+                document.getElementById('condo-specific').style.display = "none";
+                document.getElementById('townhouse-specific').style.display = "none";
+                document.getElementById('house-specific').style.display = "none";
+                document.getElementById('apartment-specific').style.display = "block";
+                break;
+            default: // this is house
+                document.getElementById('condo-specific').style.display = "none";
+                document.getElementById('townhouse-specific').style.display = "none";
+                document.getElementById('house-specific').style.display = "block";
+                document.getElementById('apartment-specific').style.display = "none";
+                break;
+        }
+    })
+</script>
+</body>
+</html>
