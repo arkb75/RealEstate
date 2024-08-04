@@ -238,13 +238,11 @@ router.get('/count-demotable', async (req, res) => {
     }
 });
 
-// Modify the /appointments POST route to hardcode the status
 router.post('/appointments', async (req, res) => {
-    const { realtorID, date, time, buyerEmail, meetingPlace } = req.body;
-    const status = "booked"; // Hardcoded status
+    const { date, time, meetingPlace } = req.body;
 
     try {
-        const result = await appService.createAppointment(status, realtorID, date, time, buyerEmail, meetingPlace);
+        const result = await appService.createAppointment(date, time, meetingPlace);
 
         if (result.success) {
             res.json({
@@ -265,6 +263,8 @@ router.post('/appointments', async (req, res) => {
         });
     }
 });
+
+
 
 // Fetch appointments based on user type
 router.get('/appointments', async (req, res) => {

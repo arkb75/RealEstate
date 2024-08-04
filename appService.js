@@ -535,13 +535,15 @@ async function registerUser(email, name, phone, userType, realtorID) {
     });
 }
 
-async function createAppointment(realtorID, date, time, buyerEmail, meetingPlace) {
+async function createAppointment(date, time, meetingPlace) {
     // Ensure only buyers can create appointments
     if (loggedUser[3] !== 'buyer') {
         return { success: false, message: 'Only buyers can create appointments' };
     }
 
     const status = "booked"; // Hardcoded status
+    const buyerEmail = loggedUser[1]; // Assuming email is at index 1
+    const realtorID = loggedUser[4]; // Assuming realtorID is at index 4
 
     return await withOracleDB(async (connection) => {
         const insertQuery = `

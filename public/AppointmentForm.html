@@ -9,23 +9,12 @@
 <body>
 <h2>Book an Appointment</h2>
 <form id="appointmentForm">
-    <!-- Remove the status input field -->
-    <!--
-    <label for="status">Status:</label><br>
-    <input type="text" id="status" name="status" maxlength="9" required><br><br>
-    -->
-
-    <label for="realtorID">Realtor ID:</label><br>
-    <input type="number" id="realtorID" name="realtorID" required><br><br>
-
+    <!-- Removed the status, email, and realtorID fields -->
     <label for="date">Date (YYYY-MM-DD):</label><br>
     <input type="date" id="date" name="date" required><br><br>
 
     <label for="time">Time (HH:MM):</label><br>
     <input type="time" id="time" name="time" required><br><br>
-
-    <label for="buyerEmail">Buyer Email:</label><br>
-    <input type="email" id="buyerEmail" name="buyerEmail" required><br><br>
 
     <label for="meetingPlace">Meeting Place:</label><br>
     <input type="text" id="meetingPlace" name="meetingPlace" maxlength="255" required><br><br>
@@ -39,19 +28,13 @@
     document.getElementById('appointmentForm').addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        const status = "booked"; // Hardcoded status
-        const realtorID = document.getElementById('realtorID').value;
         const date = document.getElementById('date').value;
         const time = document.getElementById('time').value;
-        const buyerEmail = document.getElementById('buyerEmail').value;
         const meetingPlace = document.getElementById('meetingPlace').value;
 
         const formData = {
-            status: status,
-            realtorID: realtorID,
             date: date,
             time: time,
-            buyerEmail: buyerEmail,
             meetingPlace: meetingPlace
         };
 
