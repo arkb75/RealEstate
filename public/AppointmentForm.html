@@ -9,8 +9,11 @@
 <body>
 <h2>Book an Appointment</h2>
 <form id="appointmentForm">
+    <!-- Remove the status input field -->
+    <!--
     <label for="status">Status:</label><br>
     <input type="text" id="status" name="status" maxlength="9" required><br><br>
+    -->
 
     <label for="realtorID">Realtor ID:</label><br>
     <input type="number" id="realtorID" name="realtorID" required><br><br>
@@ -36,7 +39,7 @@
     document.getElementById('appointmentForm').addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        const status = document.getElementById('status').value;
+        const status = "booked"; // Hardcoded status
         const realtorID = document.getElementById('realtorID').value;
         const date = document.getElementById('date').value;
         const time = document.getElementById('time').value;
@@ -75,4 +78,3 @@
 </script>
 </body>
 </html>
-
