@@ -145,7 +145,6 @@ CREATE TABLE OFFERS (
                             ON DELETE CASCADE
 );
 
--- Creating the Appointments table
 CREATE TABLE APPOINTMENTS (
                               AppointmentID INTEGER NOT NULL,
                               AppointmentStatus CHAR(9) NOT NULL,
@@ -345,3 +344,4 @@ VALUES (5, 'Pending', '2024-07-01', '2024-07-10', 560000, 'brettlee@rediffmail.c
 INSERT INTO OFFERS (OfferID, OfferStatus, OfferDate, OfferExpiryDate, OfferAmount, BuyerEmail, ListingID, Address, PostalCode)
 VALUES (6, 'Accepted', '2024-08-01', '2024-08-10', 410000, 'stevesmith@google.com', 6, '987 Elm St', 'K1P5G1');
 
+COMMIT;
