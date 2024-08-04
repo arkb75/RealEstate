@@ -47,6 +47,8 @@
 
             const offerDetails = await response.json();
 
+            console.log(offerDetails);
+
             document.getElementById('buyerEmail').value = offerDetails.buyerEmail;
             document.getElementById('listingID').value = offerDetails.listingID;
             document.getElementById('offerStatus').value = offerDetails.offerStatus;

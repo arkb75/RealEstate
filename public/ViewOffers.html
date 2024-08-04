@@ -10,6 +10,9 @@
 <h1>View Offers</h1>
 
 <div id="offerDetails">
+    <label for="offerID">Offer ID:</label>
+    <input type="number" id="offerID" name="offerID" readonly>
+
     <label for="buyerEmail">Buyer Email:</label>
     <input type="email" id="buyerEmail" name="buyerEmail" readonly>
 
@@ -44,23 +47,39 @@
 <p>Back to <a href="ListingDetail.html">Listing Details</a></p>
 
 <script>
-    let currentOfferIndex = 0;
-    let offers = [];
-
+    let offers;
     async function loadOffers() {
         try {
-            const response = await fetch('/offers?listingID=1'); // Replace with dynamic listing ID
+            const response = await fetch(`/offers`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load offers');
+            }
+
             offers = await response.json();
+
             if (offers.length > 0) {
+                if (typeof currentOfferIndex === 'undefined') {
+                    currentOfferIndex = 0;
+                }
+
                 displayOffer(offers[currentOfferIndex]);
+            } else {
+                alert('No offers found for this listing.');
             }
         } catch (error) {
             console.error('Error loading offers:', error);
-            alert('Failed to load offers.');
+            alert('Failed to load offers: ' + error.message);
         }
     }
 
     function displayOffer(offer) {
+        document.getElementById('offerID').value = offer.offerID;
         document.getElementById('buyerEmail').value = offer.buyerEmail;
         document.getElementById('listingID').value = offer.listingID;
         document.getElementById('offerAmount').value = offer.offerAmount;
@@ -86,13 +105,14 @@
 
     async function updateOfferStatus(status) {
         const offer = offers[currentOfferIndex];
+        const offerID = offer.offerID;
         try {
             const response = await fetch(`/update-offer-status`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ offerID: offer.offerID, status })
+                body: JSON.stringify({ offerID, status })
             });
 
             if (!response.ok) {

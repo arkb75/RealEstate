@@ -24,33 +24,6 @@ router.get('/getUserType', async (req, res) => {
     const loggedUser = await appService.getLoggedUser();
     const userType = loggedUser[3];
     res.json({uType: userType});
-
-router.get('/view-offers', async (req, res) => {
-    const listingID = req.query.listingID;
-
-    try {
-        const offers = await appService.fetchOffersForListing(listingID);
-        res.render('ViewOffers', { listingID, offers });
-    } catch (error) {
-        console.error('Error fetching offers:', error);
-        res.status(500).send('An error occurred while fetching offers.');
-    }
-});
-
-router.post('/update-offer-status', async (req, res) => {
-    const { offerID, newStatus } = req.body;
-
-    try {
-        const result = await appService.updateOfferStatus(offerID, newStatus);
-        if (result) {
-            res.json({ success: true, message: 'Offer status updated successfully.' });
-        } else {
-            res.status(400).json({ success: false, message: 'Failed to update offer status.' });
-        }
-    } catch (error) {
-        console.error('Error updating offer status:', error);
-        res.status(500).json({ success: false, message: 'An error occurred while updating offer status.' });
-    }
 });
 
 router.get('/ListingDetail', async (req, res) => {
@@ -121,10 +94,23 @@ router.post('/create-offer', async (req, res) => {
 });
 
 router.get('/offers', async (req, res) => {
-    const listingID = req.query.listingID;
     try {
+        const listingID = currReq.query.lid;
         const offers = await appService.fetchOffersForListing(listingID);
-        res.json(offers);
+
+        const offerDetails = offers.map(offer => ({
+            offerID: offer[0],
+            offerStatus: offer[1],
+            offerDate: offer[2],
+            offerExpiryDate: offer[5],
+            offerAmount: offer[3],
+            buyerEmail: offer[4],
+            listingID: offer[6],
+            address: offer[7],
+            postalCode: offer[8]
+        }));
+
+        res.json(offerDetails);
     } catch (error) {
         console.error('Error fetching offers:', error);
         res.status(500).send('An error occurred while fetching offers.');
