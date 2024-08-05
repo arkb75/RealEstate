@@ -7,8 +7,11 @@
     <title>Listing Details</title>
 </head>
 <body>
+    <a href="index.html">Back to listings</a>
     <h1>Listing Details</h1>
-    <h2><%= property[4] %>, <%= property[5] %>, <%= property[6] %></h2>
+    <h2 id="addr"><%= property[4] %></h2>
+    <h2><%= property[5] %>, <%= property[6] %></h2>
+    <h2 id="pCode"><%= property[8] %></h2>
     <h2 id="price">Price: $<%= property[3] %></h2>
     <p>Status: <%= property[1] %></p>
     <p>Property Type:</p>
@@ -37,6 +40,9 @@
     <% if (user[3] === 'buyer') { %>
         <button onclick="window.location.href='CreateOffer.html'">Create Offer</button>
     <% } else if (user[3] === 'seller') { %>
+        <button id="deleteButton"
+                data-p-code="<%= property[8] %>"
+                data-addr="<%= property[4] %>">Delete Listing</button>
         <button onclick="window.location.href='ViewOffers.html'">View Offers</button>
     <% } %>
 
@@ -62,5 +68,27 @@
             document.getElementById('floors').textContent = "";
             document.getElementById('basement').textContent = "";
         }
+
     }
+
+    document.getElementById('deleteButton').addEventListener("click", async function () {
+        const userResp = confirm("Are you sure you want to delete this listing? This action is not reversible!");
+        const deleteButton = document.getElementById('deleteButton');
+        const postalCode = deleteButton.getAttribute('data-p-code');
+        const address = deleteButton.getAttribute('data-addr');
+        console.log(postalCode);
+        console.log(address);
+        if (userResp) { // if user pressed 'OK'
+            const response = await fetch(`/delete-listing?address=${encodeURIComponent(address)}&postalCode=${encodeURIComponent(postalCode)}`, {
+                method: "DELETE"
+            });
+
+            if (response.success) {
+                alert("Successfully deleted listing with address: " + response.addr);
+            } else {
+                alert("ERROR, could not delete listing");
+            }
+        }
+    });
+
 </script>

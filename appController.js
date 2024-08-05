@@ -42,6 +42,22 @@ router.get('/ListingDetail', async (req, res) => {
         user: loggedUser});
 });
 
+router.delete('/delete-listing', async (req, res) => {
+    const address = req.query.address;
+    const postalCode = req.query.postalCode;
+
+    const response = await appService.deleteListing(address, postalCode);
+
+    if (response.success) {
+        res.json({
+            success: true,
+            address: response.addr
+        });
+    } else {
+        res.json({success: false});
+    }
+})
+
 router.get('/offer-details', async (req, res) => {
     const listingId = currReq.query.lid;
     const addr = currReq.query.address;

@@ -630,6 +630,30 @@ async function cancelAppointment(appointmentID) {
     });
 }
 
+async function deleteListing(address, postalCode) {
+    return await withOracleDB(async (connection) => {
+        const delQuery = `
+            DELETE FROM PROPERTIES WHERE Address = :address AND
+                                       PostalCode = :postalCode
+        `;
+        const delResult = await connection.execute(delQuery, {
+            address: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: address },
+            postalCode: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: postalCode }
+        });
+
+        // according to course piazza
+        await connection.commit();
+
+
+        if (delResult.rowsAffected > 0 && delResult.rowsAffected) {
+            return {success: true, addr: address};
+        } else {
+            return {success: false};
+        }
+
+    })
+}
+
 module.exports = {
     getPropertyDetails,
     testOracleConnection,
@@ -647,5 +671,6 @@ module.exports = {
     createOffer,
     insertListing,
     fetchOffersForListing,
-    updateOfferStatus
+    updateOfferStatus,
+    deleteListing
 };
