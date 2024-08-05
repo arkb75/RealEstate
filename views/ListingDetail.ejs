@@ -8,27 +8,42 @@
 </head>
 <body>
     <a href="index.html">Back to listings</a>
-    <h1>Listing Details</h1>
+    <h1 id="title">Listing Details</h1>
+    <h2>Listing ID:</h2>
+    <h3><%= property[0] %></h3>
     <h2 id="addr"><%= property[4] %></h2>
     <h2><%= property[5] %>, <%= property[6] %></h2>
     <h2 id="pCode"><%= property[8] %></h2>
-    <h2 id="price">Price: $<%= property[3] %></h2>
-    <p>Status: <%= property[1] %></p>
-    <p>Property Type:</p>
-    <p id="type"><%= property[7] %></p>
-    <p>Condition: <%= property[9] %></p>
-    <p>Baths: <%= property[10] %></p>
-    <p>Beds: <%= property[11] %></p>
-    <p>Year Built: <%= property[12] %></p>
-    <p>Interior Space: <%= property[13] %> sqft</p>
-    <p id="yard">Yard Space:</p>
-    <p><%= property[20] %></p>
-    <p id="garage">Garage: </p>
-    <p><%= property[21] %></p>
-    <p id="floors">Floors:</p>
-    <p><%= property[22] %></p>
-    <p id="basement">Basement:</p>
-    <p><%= property[23] %></p>
+    <div id="details-view-static">
+        <h2 id="price">Price: $<%= property[3] %></h2>
+        <p>Status: <%= property[1] %></p>
+        <p>Property Type:</p>
+        <p id="type"><%= property[7] %></p>
+        <p>Condition: <%= property[9] %></p>
+        <p id="bath">Baths: <%= property[10] %></p>
+        <p id="bed">Beds: <%= property[11] %></p>
+        <p id="year-built">Year Built: <%= property[12] %></p>
+        <p id="interior-space">Interior Space: <%= property[13] %> sqft</p>
+        <div id="detail-one">
+            <p id="yard">Yard Space:</p>
+            <p><%= property[20] %></p>
+        </div>
+        <div id="detail-two">
+            <p id="garage">Garage: </p>
+            <p><%= property[21] %></p>
+        </div>
+        <div id="detail-three">
+            <p id="floors">Floors:</p>
+            <p><%= property[22] %></p>
+        </div>
+        <div id="detail-four">
+            <p id="basement">Basement:</p>
+            <p><%= property[23] %></p>
+        </div>
+    </div>
+    <div id="details-view-changeable">
+<!--        Edit inputs will populate here-->
+    </div>
     <h3>REALTOR</h3>
     <p><%= property[15] %></p>
     <p><%= property[19] %></p>
@@ -43,7 +58,20 @@
         <button id="deleteButton"
                 data-p-code="<%= property[8] %>"
                 data-addr="<%= property[4] %>">Delete Listing</button>
-        <button onclick="window.location.href='ViewOffers.html'">View Offers</button>
+        <button id="edit-button"
+                data-price="<%= property[3] %>"
+                data-bath="<%= property[10] %>"
+                data-bed="<%= property[11] %>"
+                data-year-built="<%= property[12] %>"
+                data-interior-space="<%= property[13] %>"
+                data-property-type="<%= property[7] %>"
+                data-details-one="<%= property[20] %>"
+                data-details-two="<%= property[21] %>"
+                data-details-three="<%= property[22] %>"
+        >Edit Listing</button>
+        <button id="submit-edit-btn" style="display: none">Submit Edits</button>
+        <button id="cancel-edit-btn" style="display: none">Cancel Edits</button>
+        <button id="view-offers-btn" onclick="window.location.href='ViewOffers.html'">View Offers</button>
     <% } %>
 
 </body>
@@ -54,16 +82,22 @@
         let type = document.getElementById('type').textContent;
         if (type === "Townhouse") {
             document.getElementById('yard').textContent = "Garage:";
+            document.getElementById('yard').id = 't-garage';
             document.getElementById('garage').textContent = "Floors:";
+            document.getElementById('garage').id = 't-floors';
             document.getElementById('floors').textContent = "Monthly HOA Fee:";
+            document.getElementById('floors').id = 't-fee';
             document.getElementById('basement').textContent = "";
         } else if (type === "Condo") {
             document.getElementById('yard').textContent = "Monthly HOA Fee:";
+            document.getElementById('yard').id = 'c-fee';
             document.getElementById('garage').textContent = "Unit Number:";
+            document.getElementById('garage').id = 'c-num';
             document.getElementById('floors').textContent = "";
             document.getElementById('basement').textContent = "";
         } else if (type === "Apartment") {
             document.getElementById('yard').textContent = "Unit Number:";
+            document.getElementById('yard').id = 'a-num';
             document.getElementById('garage').textContent = "";
             document.getElementById('floors').textContent = "";
             document.getElementById('basement').textContent = "";
@@ -76,13 +110,11 @@
         const deleteButton = document.getElementById('deleteButton');
         const postalCode = deleteButton.getAttribute('data-p-code');
         const address = deleteButton.getAttribute('data-addr');
-        console.log(postalCode);
-        console.log(address);
         if (userResp) { // if user pressed 'OK'
             const response = await fetch(`/delete-listing?address=${encodeURIComponent(address)}&postalCode=${encodeURIComponent(postalCode)}`, {
                 method: "DELETE"
             });
-
+            document.getElementById('deleteButton').style.display = "none";
             if (response.success) {
                 alert("Successfully deleted listing with address: " + response.addr);
             } else {
@@ -90,5 +122,289 @@
             }
         }
     });
+
+    document.getElementById('submit-edit-btn').addEventListener("click", function () {
+
+    })
+
+    document.getElementById('edit-button').addEventListener("click", function () {
+        alert("Please note: address, postal code, property conditon, property type, and status are NOT changeable. " +
+            "If you would like to change those elements, please DELETE and CREATE the listing again.")
+
+        // get the data from the EJS file instead of doing a redundant query
+        const editBtn = document.getElementById('edit-button');
+        const propertyPrice = editBtn.getAttribute('data-price');
+        const bath = editBtn.getAttribute('data-bath');
+        const bed = editBtn.getAttribute('data-bed');
+        const yearBuilt = editBtn.getAttribute('data-year-built');
+        const interiorSpace = editBtn.getAttribute('data-interior-space');
+
+        document.getElementById('title').textContent = "Edit Listing";
+        const changeableAttributesContainer = document.getElementById('details-view-changeable');
+
+        const priceDiv = document.createElement('div');
+        priceDiv.id = 'price-div';
+        const priceEntry = document.createElement('input');
+        priceEntry.value = propertyPrice;
+        priceEntry.type = 'number';
+        priceEntry.id = 'price-edit';
+        document.getElementById('price').style.display = "none";
+        const priceEntryLabel = document.createElement('label');
+        priceEntryLabel.setAttribute('for', 'price-edit');
+        priceEntryLabel.textContent = 'Change price';
+        priceDiv.appendChild(priceEntryLabel);
+        priceDiv.appendChild(priceEntry);
+
+        const bathDiv = document.createElement('div');
+        bathDiv.id = 'bath-div';
+        const bathEntry = document.createElement('input');
+        bathEntry.value = bath;
+        bathEntry.type = 'number';
+        bathEntry.id = 'bath-edit';
+        document.getElementById('bath').style.display = "none";
+        const bathEntryLabel = document.createElement('label');
+        bathEntryLabel.setAttribute('for', 'bath-edit');
+        bathEntryLabel.textContent = 'Change number of bathrooms';
+        bathDiv.appendChild(bathEntryLabel);
+        bathDiv.appendChild(bathEntry);
+
+        const bedDiv = document.createElement('div');
+        bedDiv.id = 'bed-div';
+        const bedEntry = document.createElement('input');
+        bedEntry.value = bed;
+        bathEntry.type = 'number';
+        bathEntry.id = 'bed-edit';
+        document.getElementById('bed').style.display = "none";
+        const bedEntryLabel = document.createElement('label');
+        bedEntryLabel.setAttribute('for', 'bed-edit');
+        bedEntryLabel.textContent = 'Change number of bedrooms';
+        bedDiv.appendChild(bedEntryLabel);
+        bedDiv.appendChild(bedEntry);
+
+        const yearDiv = document.createElement('div');
+        yearDiv.id = 'year-div';
+        const yearBuiltEntry = document.createElement('input');
+        yearBuiltEntry.value = yearBuilt;
+        yearBuiltEntry.type = 'number';
+        yearBuiltEntry.id = 'year-edit';
+        yearBuiltEntry.maxLength = 4;
+        document.getElementById('year-built').style.display = "none";
+        const yearBuiltEntryLabel = document.createElement('label');
+        yearBuiltEntryLabel.setAttribute('for', 'year-edit');
+        yearBuiltEntryLabel.textContent = 'Change year built';
+        yearDiv.appendChild(yearBuiltEntryLabel);
+        yearDiv.appendChild(yearBuiltEntry);
+
+        const iSpaceDiv = document.createElement('div');
+        iSpaceDiv.id = 'ispace-div';
+        const interiorSpaceEntry = document.createElement('input');
+        interiorSpaceEntry.value = interiorSpace;
+        interiorSpaceEntry.type = 'number';
+        interiorSpaceEntry.id = 'interior-space-edit';
+        document.getElementById('interior-space').style.display = "none";
+        const interiorSpaceEntryLabel = document.createElement('label');
+        interiorSpaceEntryLabel.setAttribute('for', 'interior-space-edit');
+        interiorSpaceEntryLabel.textContent = 'Change interior space';
+        iSpaceDiv.appendChild(interiorSpaceEntryLabel);
+        iSpaceDiv.appendChild(interiorSpaceEntry);
+
+        changeableAttributesContainer.appendChild(priceDiv);
+        changeableAttributesContainer.appendChild(bathDiv);
+        changeableAttributesContainer.appendChild(bedDiv);
+        changeableAttributesContainer.appendChild(yearDiv);
+        changeableAttributesContainer.appendChild(iSpaceDiv);
+
+        const propertyType = editBtn.getAttribute('data-property-type');
+        if (propertyType === 'House') {
+            const ySpace = editBtn.getAttribute('data-details-one');
+            const hGarage = editBtn.getAttribute('data-details-two');
+            const hFloors = editBtn.getAttribute('data-details-three');
+
+            const ySpaceDiv = document.createElement('div');
+            ySpaceDiv.id = 'yspace-div';
+            const yardEntry = document.createElement('input');
+            yardEntry.value = ySpace;
+            yardEntry.type = 'number';
+            yardEntry.id = 'yspace-edit';
+            document.getElementById('detail-one').style.display = "none";
+            const yardEntryLabel = document.createElement('label');
+            yardEntryLabel.setAttribute('for', 'yspace-edit');
+            yardEntryLabel.textContent = 'Change yard space';
+            ySpaceDiv.appendChild(yardEntryLabel);
+            ySpaceDiv.appendChild(yardEntry);
+
+            const garageDiv = document.createElement('div');
+            garageDiv.id = 'garage-div';
+            const garageEntry = document.createElement('input');
+            garageEntry.value = hGarage;
+            garageEntry.type = 'number';
+            garageEntry.id = 'garage-edit';
+            document.getElementById('detail-two').style.display = "none";
+            const garageEntryLabel = document.createElement('label');
+            garageEntryLabel.setAttribute('for', 'garage-edit');
+            garageEntryLabel.textContent = 'Change number of garages';
+            garageDiv.appendChild(garageEntryLabel);
+            garageDiv.appendChild(garageEntry);
+
+            const floorDiv = document.createElement('div');
+            floorDiv.id = 'floor-div';
+            const floorEntry = document.createElement('input');
+            floorEntry.value = hFloors;
+            floorEntry.type = 'number';
+            floorEntry.id = 'floor-edit';
+            document.getElementById('detail-three').style.display = "none";
+            const floorEntryLabel = document.createElement('label');
+            floorEntryLabel.setAttribute('for', 'floor-edit');
+            floorEntryLabel.textContent = 'Change number of floors';
+            floorDiv.appendChild(floorEntryLabel);
+            floorDiv.appendChild(floorEntry);
+
+            const basementDiv = document.createElement('div');
+            basementDiv.id = 'basement-div';
+            const basementEntry = document.createElement('select');
+            const basementYes = document.createElement('option');
+            basementYes.value = 'Yes';
+            basementYes.textContent = "Yes";
+            const basementNo = document.createElement('option');
+            basementNo.value = 'No';
+            basementNo.textContent = "No";
+            basementEntry.appendChild(basementYes);
+            basementEntry.appendChild(basementNo);
+            basementEntry.id = 'basement-edit';
+            document.getElementById('detail-four').style.display = "none";
+            const basementEntryLabel = document.createElement('label');
+            basementEntryLabel.setAttribute('for', 'basement-edit');
+            basementEntryLabel.textContent = 'Change basement';
+            basementDiv.appendChild(basementEntryLabel);
+            basementDiv.appendChild(basementEntry);
+
+            changeableAttributesContainer.appendChild(ySpaceDiv);
+            changeableAttributesContainer.appendChild(garageDiv);
+            changeableAttributesContainer.appendChild(floorDiv);
+            changeableAttributesContainer.appendChild(basementDiv);
+
+        } else if (propertyType === 'Townhouse') {
+            const tGarage = editBtn.getAttribute('data-details-one');
+            const tFloor = editBtn.getAttribute('data-details-two');
+            const tFee = editBtn.getAttribute('data-details-three');
+
+            const garageDiv = document.createElement('div');
+            garageDiv.id = 'garage-div';
+            const garageEntry = document.createElement('input');
+            garageEntry.value = tGarage;
+            garageEntry.type = 'number';
+            garageEntry.id = 'garage-edit';
+            document.getElementById('detail-one').style.display = "none";
+            const garageEntryLabel = document.createElement('label');
+            garageEntryLabel.setAttribute('for', 'garage-edit');
+            garageEntryLabel.textContent = 'Change number of garages';
+            garageDiv.appendChild(garageEntryLabel);
+            garageDiv.appendChild(garageEntry);
+
+            const floorDiv = document.createElement('div');
+            floorDiv.id = 'floor-div';
+            const floorEntry = document.createElement('input');
+            floorEntry.value = tFloor;
+            floorEntry.type = 'number';
+            floorEntry.id = 'floor-edit';
+            document.getElementById('detail-two').style.display = "none";
+            const floorEntryLabel = document.createElement('label');
+            floorEntryLabel.setAttribute('for', 'floor-edit');
+            floorEntryLabel.textContent = 'Change number of floors';
+            floorDiv.appendChild(floorEntryLabel);
+            floorDiv.appendChild(floorEntry);
+
+            const feeDiv = document.createElement('div');
+            feeDiv.id = 'fee-div';
+            const feeEntry = document.createElement('input');
+            feeEntry.value = tFee;
+            feeEntry.type = 'number';
+            feeEntry.id = 'fee-edit';
+            document.getElementById('detail-three').style.display = "none";
+            const feeEntryLabel = document.createElement('label');
+            feeEntryLabel.setAttribute('for', 'fee-edit');
+            feeEntryLabel.textContent = 'Change monthly HOA Fee';
+            feeDiv.appendChild(feeEntryLabel);
+            feeDiv.appendChild(feeEntry);
+
+            changeableAttributesContainer.appendChild(garageDiv);
+            changeableAttributesContainer.appendChild(floorDiv);
+            changeableAttributesContainer.appendChild(feeDiv);
+        } else if (propertyType === 'Condo') {
+            const cFee = editBtn.getAttribute('data-details-one');
+            const cNum = editBtn.getAttribute('data-details-two');
+
+            const feeDiv = document.createElement('div');
+            feeDiv.id = 'fee-div';
+            const feeEntry = document.createElement('input');
+            feeEntry.value = cFee;
+            feeEntry.type = 'number';
+            feeEntry.id = 'fee-edit';
+            document.getElementById('detail-one').style.display = "none";
+            const feeEntryLabel = document.createElement('label');
+            feeEntryLabel.setAttribute('for', 'fee-edit');
+            feeEntryLabel.textContent = 'Change monthly HOA Fee';
+            feeDiv.appendChild(feeEntryLabel);
+            feeDiv.appendChild(feeEntry);
+
+            const numDiv = document.createElement('div');
+            numDiv.id = 'num-div';
+            const uNumEntry = document.createElement('input');
+            uNumEntry.value = cNum;
+            uNumEntry.type = 'number';
+            uNumEntry.id = 'cnum-edit';
+            document.getElementById('detail-two').style.display = "none";
+            const uNumEntryLabel = document.createElement('label');
+            uNumEntryLabel.setAttribute('for', 'cnum-edit');
+            uNumEntryLabel.textContent = 'Change unit number';
+            numDiv.appendChild(uNumEntryLabel);
+            numDiv.appendChild(uNumEntry);
+
+            changeableAttributesContainer.appendChild(feeDiv);
+            changeableAttributesContainer.appendChild(numDiv);
+        } else { // this is apartment
+            const aNum = editBtn.getAttribute('data-details-one');
+
+            const numDiv = document.createElement('div');
+            numDiv.id = 'num-div';
+            const uNumEntry = document.createElement('input');
+            uNumEntry.value = aNum;
+            uNumEntry.type = 'number';
+            uNumEntry.id = 'anum-edit';
+            document.getElementById('detail-two').style.display = "none";
+            const uNumEntryLabel = document.createElement('label');
+            uNumEntryLabel.setAttribute('for', 'anum-edit');
+            uNumEntryLabel.textContent = 'Change unit number';
+            numDiv.appendChild(uNumEntryLabel);
+            numDiv.appendChild(uNumEntry);
+
+            changeableAttributesContainer.appendChild(numDiv);
+        }
+        document.getElementById('cancel-edit-btn').style.display = "inline";
+        document.getElementById('submit-edit-btn').style.display = "inline";
+        document.getElementById('edit-button').style.display = "none";
+        document.getElementById('view-offers-btn').style.display = "none";
+
+    })
+
+    document.getElementById('cancel-edit-btn').addEventListener("click", function () {
+        document.getElementById('cancel-edit-btn').style.display = "none";
+        document.getElementById('submit-edit-btn').style.display = "none";
+        document.getElementById('edit-button').style.display = "inline";
+        document.getElementById('view-offers-btn').style.display = "inline";
+        const editInputs = document.querySelector('#details-view-changeable');
+        while (editInputs.firstChild) {
+            editInputs.removeChild(editInputs.firstChild);
+        }
+        document.getElementById('price').style.display = "block";
+        document.getElementById('bath').style.display = "block";
+        document.getElementById('bed').style.display = "block";
+        document.getElementById('year-built').style.display = "block";
+        document.getElementById('interior-space').style.display = "block";
+        document.getElementById('detail-one').style.display = "block";
+        document.getElementById('detail-two').style.display = "block";
+        document.getElementById('detail-three').style.display = "block";
+        document.getElementById('detail-four').style.display = "block";
+    })
 
 </script>
