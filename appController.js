@@ -259,4 +259,15 @@ router.post('/update-appointment-status', async (req, res) => {
     }
 });
 
+router.get('/user-type', async (req, res) => {
+    try {
+        const loggedUser = await appService.getLoggedUser();
+        const userType = loggedUser[3];
+        res.json({ userType });
+    } catch (error) {
+        console.error('Error fetching user type:', error);
+        res.status(500).json({ message: 'An error occurred while fetching user type.' });
+    }
+});
+
 module.exports = router;
