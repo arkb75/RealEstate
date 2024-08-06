@@ -9,3 +9,7 @@ Appointments facilitate scheduling property viewings, including attributes such 
 For example, first-time home buyers can use the platform to search for properties based on their preferences, schedule viewings, make offers, and contact service providers for inspections. Property sellers can list their properties, manage viewings, and receive offers. Real estate agents can efficiently manage multiple listings, appointments, and transactions. Investors can find and manage investment properties, and landlords can list rental properties and manage applications.
 
 This comprehensive modeling supports the entire lifecycle of real estate transactions, making the application robust and user-friendly for real-life scenarios in the real estate market.
+
+# Acknowledgments
+
+We acknowledge the support and resources provided by the University of British Columbia's CPSC 304 course team. Their [sample project](https://github.students.cs.ubc.ca/CPSC304/CPSC304_Node_Project) served as a valuable reference for structuring our application and understanding the integration between Node.js and Oracle databases. We appreciate the efforts of instructors and TAs who provided feedback and support throughout the project development process.
