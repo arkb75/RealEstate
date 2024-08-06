@@ -60,6 +60,13 @@
     <p>Rating: <%= amenities[0][3] %></p>
 <% } %>
 
+<h3>Offer Counts</h3>
+<p>Number of Offers for this Listing:
+    <% const currentListingID = property[0]; %>
+    <% const offerCount = offers.find(offer => offer[0] === currentListingID) ? offers.find(offer => offer[0] === currentListingID)[1] : 0; %>
+    <%= offerCount %>
+</p>
+
 <% if (user[3] === 'buyer') { %>
     <button onclick="window.location.href='CreateOffer.html'">Create Offer</button>
     <button onclick="window.location.href='AppointmentForm.html'">Book Appointment</button>
@@ -85,13 +92,6 @@
     <button id="cancel-edit-btn" style="display: none">Cancel Edits</button>
     <button id="view-offers-btn" onclick="window.location.href='ViewOffers.html'">View Offers</button>
 <% } %>
-
-<h3>Offer Counts</h3>
-<p>Number of Offers for this Listing:
-    <% const currentListingID = property[0]; %>
-    <% const offerCount = offers.find(offer => offer[0] === currentListingID) ? offers.find(offer => offer[0] === currentListingID)[1] : 0; %>
-    <%= offerCount %>
-</p>
 
 <div id="submission-status"></div>
 </body>
