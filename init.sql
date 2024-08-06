@@ -307,19 +307,19 @@ VALUES
 
 INSERT INTO APPOINTMENTS (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, ListingID, Address, PostalCode, AppointmentStatus)
 VALUES
-    (1, '2024-03-05', '10:00', '123 Elm St', 'samjane@hotmail.com', 1, '123 Maple St', 'V5K0A1', 'Scheduled');
+    (1, '2024-03-05', '10:00', '123 Elm St', 'rehnoorsaini@outlook.com', 1, '123 Maple St', 'V5K0A1', 'Scheduled');
 INSERT INTO APPOINTMENTS (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, ListingID, Address, PostalCode, AppointmentStatus)
 VALUES
     (2, '2024-04-05', '14:00', '456 Oak St', 'georgewash@laundry.com', 2, '456 Oak St', 'M5H2N2', 'Completed');
 INSERT INTO APPOINTMENTS (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, ListingID, Address, PostalCode, AppointmentStatus)
 VALUES
-    (3, '2024-05-10', '11:00', '789 Pine St', 'willsmith@alaadin.com', 3, '789 Pine St', 'T2P1B3', 'Scheduled');
+    (3, '2024-05-10', '11:00', '789 Pine St', 'georgewash@laundry.com', 3, '789 Pine St', 'T2P1B3', 'Scheduled');
 INSERT INTO APPOINTMENTS (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, ListingID, Address, PostalCode, AppointmentStatus)
 VALUES
     (4, '2024-06-10', '15:00', '321 Maple St', 'sundarpichai@gmail.com', 4,'321 Birch St', 'H3Z2Y7', 'Cancelled');
 INSERT INTO APPOINTMENTS (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, ListingID, Address, PostalCode, AppointmentStatus)
 VALUES
-    (5, '2024-07-15', '09:00', '654 Birch St', 'brettlee@rediffmail.com', 5, '654 Cedar St', 'T5J1B7', 'Scheduled');
+    (5, '2024-07-15', '09:00', '654 Birch St', 'sundarpichai@gmail.com', 5, '654 Cedar St', 'T5J1B7', 'Scheduled');
 INSERT INTO APPOINTMENTS (AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, ListingID, Address, PostalCode, AppointmentStatus)
 VALUES
     (6, '2024-08-20', '13:00', '987 Cedar St', 'stevesmith@google.com', 6, '987 Elm St', 'K1P5G1', 'Completed');
