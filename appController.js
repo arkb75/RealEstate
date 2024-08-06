@@ -34,10 +34,12 @@ router.get('/ListingDetail', async (req, res) => {
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
     const loggedUser = await appService.getLoggedUser();
     const propAmenities = await appService.getAmenities(addr, pc);
+    const offerPerListing = await appService.countOffersPerListing();
     res.render('ListingDetail', {
         property: propertyDetails,
         user: loggedUser,
-        amenities: propAmenities});
+        amenities: propAmenities,
+        offers: offerPerListing});
 });
 
 router.delete('/delete-listing', async (req, res) => {

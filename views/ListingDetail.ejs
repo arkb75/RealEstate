@@ -7,84 +7,92 @@
     <title>Listing Details</title>
 </head>
 <body>
-    <a href="index.html">Back to listings</a>
-    <h1 id="title">Listing Details</h1>
-    <h2>Listing ID:</h2>
-    <h3><%= property[0] %></h3>
-    <h2 id="addr"><%= property[4] %></h2>
-    <h2><%= property[5] %>, <%= property[6] %></h2>
-    <h2 id="pCode"><%= property[8] %></h2>
-    <div id="details-view-static">
-        <h2 id="price">Price: $<%= property[3] %></h2>
-        <p>Status: <%= property[1] %></p>
-        <p>Property Type:</p>
-        <p id="type"><%= property[7] %></p>
-        <p>Condition: <%= property[9] %></p>
-        <p id="bath">Baths: <%= property[10] %></p>
-        <p id="bed">Beds: <%= property[11] %></p>
-        <p id="year-built">Year Built: <%= property[12] %></p>
-        <p id="interior-space">Interior Space: <%= property[13] %> sqft</p>
-        <div id="detail-one">
-            <p id="yard">Yard Space:</p>
-            <p><%= property[20] %></p>
-        </div>
-        <div id="detail-two">
-            <p id="garage">Garage: </p>
-            <p><%= property[21] %></p>
-        </div>
-        <div id="detail-three">
-            <p id="floors">Floors:</p>
-            <p><%= property[22] %></p>
-        </div>
-        <div id="detail-four">
-            <p id="basement">Basement:</p>
-            <p><%= property[23] %></p>
-        </div>
+<a href="index.html">Back to listings</a>
+<h1 id="title">Listing Details</h1>
+<h2>Listing ID:</h2>
+<h3><%= property[0] %></h3>
+<h2 id="addr"><%= property[4] %></h2>
+<h2><%= property[5] %>, <%= property[6] %></h2>
+<h2 id="pCode"><%= property[8] %></h2>
+<div id="details-view-static">
+    <h2 id="price">Price: $<%= property[3] %></h2>
+    <p>Status: <%= property[1] %></p>
+    <p>Property Type:</p>
+    <p id="type"><%= property[7] %></p>
+    <p>Condition: <%= property[9] %></p>
+    <p id="bath">Baths: <%= property[10] %></p>
+    <p id="bed">Beds: <%= property[11] %></p>
+    <p id="year-built">Year Built: <%= property[12] %></p>
+    <p id="interior-space">Interior Space: <%= property[13] %> sqft</p>
+    <div id="detail-one">
+        <p id="yard">Yard Space:</p>
+        <p><%= property[20] %></p>
     </div>
-    <div id="details-view-changeable">
-<!--        Edit inputs will populate here-->
+    <div id="detail-two">
+        <p id="garage">Garage: </p>
+        <p><%= property[21] %></p>
     </div>
-    <h3>REALTOR</h3>
-    <p><%= property[15] %></p>
-    <p><%= property[19] %></p>
-    <p>Proudly serving the community for <%= property[18] %> years!</p>
-    <h4>CONTACT</h4>
-    <p>Email: <%= property[16] %></p>
-    <p>Phone: <%= property[17] %></p>
+    <div id="detail-three">
+        <p id="floors">Floors:</p>
+        <p><%= property[22] %></p>
+    </div>
+    <div id="detail-four">
+        <p id="basement">Basement:</p>
+        <p><%= property[23] %></p>
+    </div>
+</div>
+<div id="details-view-changeable">
+    <!-- Edit inputs will populate here -->
+</div>
+<h3>REALTOR</h3>
+<p><%= property[15] %></p>
+<p><%= property[19] %></p>
+<p>Proudly serving the community for <%= property[18] %> years!</p>
+<h4>CONTACT</h4>
+<p>Email: <%= property[16] %></p>
+<p>Phone: <%= property[17] %></p>
 
-    <% if (amenities.length !== 0) { %>
-        <h3>AMENITIES</h3>
-        <p><%= amenities[0][0] %></p>
-        <p>Type: <%= amenities[0][1] %></p>
-        <p>Distance: <%= amenities[0][2] %></p>
-        <p>Rating: <%= amenities[0][3] %></p>
-    <% } %>
+<% if (amenities.length !== 0) { %>
+    <h3>AMENITIES</h3>
+    <p><%= amenities[0][0] %></p>
+    <p>Type: <%= amenities[0][1] %></p>
+    <p>Distance: <%= amenities[0][2] %></p>
+    <p>Rating: <%= amenities[0][3] %></p>
+<% } %>
 
-    <% if (user[3] === 'buyer') { %>
-        <button onclick="window.location.href='CreateOffer.html'">Create Offer</button>
-        <button onclick="window.location.href='AppointmentForm.html'">Book Appointment</button>
-    <% } else if (user[3] === 'seller') { %>
-        <button id="deleteButton"
-                data-p-code="<%= property[8] %>"
-                data-addr="<%= property[4] %>">Delete Listing</button>
-        <button id="edit-button"
-                data-price="<%= property[3] %>"
-                data-bath="<%= property[10] %>"
-                data-bed="<%= property[11] %>"
-                data-year-built="<%= property[12] %>"
-                data-interior-space="<%= property[13] %>"
-                data-property-type="<%= property[7] %>"
-                data-details-one="<%= property[20] %>"
-                data-details-two="<%= property[21] %>"
-                data-details-three="<%= property[22] %>"
-                data-p-code="<%= property[8] %>"
-                data-addr="<%= property[4] %>"
-                data-lid="<%= property[0] %>"
-        >Edit Listing</button>
-        <button id="submit-edit-btn" style="display: none">Submit Edits</button>
-        <button id="cancel-edit-btn" style="display: none">Cancel Edits</button>
-        <button id="view-offers-btn" onclick="window.location.href='ViewOffers.html'">View Offers</button>
-    <% } %>
+<% if (user[3] === 'buyer') { %>
+    <button onclick="window.location.href='CreateOffer.html'">Create Offer</button>
+    <button onclick="window.location.href='AppointmentForm.html'">Book Appointment</button>
+<% } else if (user[3] === 'seller') { %>
+    <button id="deleteButton"
+            data-p-code="<%= property[8] %>"
+            data-addr="<%= property[4] %>">Delete Listing</button>
+    <button id="edit-button"
+            data-price="<%= property[3] %>"
+            data-bath="<%= property[10] %>"
+            data-bed="<%= property[11] %>"
+            data-year-built="<%= property[12] %>"
+            data-interior-space="<%= property[13] %>"
+            data-property-type="<%= property[7] %>"
+            data-details-one="<%= property[20] %>"
+            data-details-two="<%= property[21] %>"
+            data-details-three="<%= property[22] %>"
+            data-p-code="<%= property[8] %>"
+            data-addr="<%= property[4] %>"
+            data-lid="<%= property[0] %>"
+    >Edit Listing</button>
+    <button id="submit-edit-btn" style="display: none">Submit Edits</button>
+    <button id="cancel-edit-btn" style="display: none">Cancel Edits</button>
+    <button id="view-offers-btn" onclick="window.location.href='ViewOffers.html'">View Offers</button>
+<% } %>
+
+<h3>Offer Counts</h3>
+<p>Number of Offers for this Listing:
+    <% const currentListingID = property[0]; %>
+    <% const offerCount = offers.find(offer => offer[0] === currentListingID) ? offers.find(offer => offer[0] === currentListingID)[1] : 0; %>
+    <%= offerCount %>
+</p>
+
 <div id="submission-status"></div>
 </body>
 </html>
@@ -155,7 +163,6 @@
         let cFee = 0;
         let cNum = 0;
         let aNum = 0;
-
         if(propertyType === 'House') {
             ySpace = document.getElementById('yspace-edit').value;
             hGarage = document.getElementById('garage-edit').value;
@@ -365,7 +372,6 @@
             basementEntryLabel.textContent = 'Change basement';
             basementDiv.appendChild(basementEntryLabel);
             basementDiv.appendChild(basementEntry);
-
             changeableAttributesContainer.appendChild(ySpaceDiv);
             changeableAttributesContainer.appendChild(garageDiv);
             changeableAttributesContainer.appendChild(floorDiv);
@@ -494,5 +500,4 @@
         document.getElementById('detail-three').style.display = "block";
         document.getElementById('detail-four').style.display = "block";
     })
-
 </script>

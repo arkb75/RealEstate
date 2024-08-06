@@ -417,8 +417,6 @@ function getDate(addThirty) {
     }
 }
 
-
-
 async function authenticateUser(email, password) {
     return await withOracleDB(async (connection) => {
         const query = 'SELECT * FROM USERS WHERE EMAIL = :email';
@@ -638,6 +636,21 @@ async function updateAppointmentStatus(appointmentID, status) {
     });
 }
 
+async function countOffersPerListing() {
+    return await withOracleDB(async (connection) => {
+        const query = `
+            SELECT ListingID, COUNT(*) AS OfferCount
+            FROM OFFERS
+            GROUP BY ListingID
+        `;
+        const result = await connection.execute(query);
+        return result.rows;
+    }).catch((error) => {
+        console.error('Error counting offers per listing:', error);
+        return [];
+    });
+}
+
 module.exports = {
     getPropertyDetails,
     testOracleConnection,
@@ -654,5 +667,6 @@ module.exports = {
     fetchAppointmentsForUser,
     updateAppointmentStatus,
     getAmenities,
-    bookAppointment
+    bookAppointment,
+    countOffersPerListing
 };
