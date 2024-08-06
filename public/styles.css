@@ -23,6 +23,46 @@ table {
     border-radius: 5px;
 }
 
+#listings {
+    display: flex;
+    flex-direction: column;
+}
+
+.welcome-header {
+    background-color: #74526C;
+    color: white;
+    padding: 10px;
+}
+
+.logout-link {
+    background-color: #FF674D;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    margin: 5px;
+}
+
+
+#create-listing-link {
+    margin-top: 5px;
+}
+
+#create-listing-link a {
+    background-color: #A37396;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    margin: 5px;
+}
+
+.listing-container {
+    margin: 20px;
+    border-radius: 20px;
+    padding: 10px;
+}
+
 th, td {
     padding: 12px 15px;
     border-bottom: 1px solid #ddd;

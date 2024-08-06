@@ -600,6 +600,25 @@ async function fetchAppointmentsForUser(email) {
     });
 }
 
+async function bookAppointment(appDate, appTime, appMeetingPlace, buyerEmail, listingID, address, postalCode) {
+    return await withOracleDB(async (connection) => {
+        const getMaxAppointmentIdQuery = `SELECT NVL(MAX(AppointmentID), 0) + 1 AS NextListingID FROM APPOINTMENTS`;
+        const maxAppointmentIdResult = await connection.execute(getMaxAppointmentIdQuery);
+        const nextAppointmentID = maxAppointmentIdResult.rows[0][0];
+
+        const result = await connection.execute(
+            `INSERT INTO APPOINTMENTS(AppointmentID, AppointmentDate, AppointmentTime, MeetingPlace, BuyerEmail, ListingID, Address, PostalCode, AppointmentStatus)
+                VALUES
+                (:nextAppointmentID, :appDate, :appTime, :appMeetingPlace, :buyerEmail, :listingID, :address, :postalCode, 'Scheduled')`,
+            [nextAppointmentID, appDate, appTime, appMeetingPlace, buyerEmail, listingID, address, postalCode],
+            { autoCommit: true }
+        );
+        return result.rowsAffected && result.rowsAffected > 0;
+    }).catch(() => {
+    return false;
+});
+}
+
 async function updateAppointmentStatus(appointmentID, status) {
     return await withOracleDB(async (connection) => {
         const query = `
@@ -634,5 +653,6 @@ module.exports = {
     updatePropertyDetails,
     fetchAppointmentsForUser,
     updateAppointmentStatus,
-    getAmenities
+    getAmenities,
+    bookAppointment
 };

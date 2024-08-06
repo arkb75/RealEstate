@@ -22,7 +22,10 @@
     <button type="submit">Submit</button>
 </form>
 
-<p id="response"></p>
+<div id="status-message"></div>
+
+<a href="ViewAppointments.html">View all Appointments</a>
+<a href="index.html">View all Listings</a>
 
 <script>
     document.getElementById('appointmentForm').addEventListener('submit', async function(event) {
@@ -39,7 +42,7 @@
         };
 
         try {
-            const response = await fetch('/api/appointments', {
+            const response = await fetch('book-appointment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -50,9 +53,9 @@
             const result = await response.json();
 
             if (result.success) {
-                document.getElementById('response').innerText = 'Appointment booked successfully!';
+                document.getElementById('status-message').textContent = "Appointment booked successfully!"
             } else {
-                document.getElementById('response').innerText = result.message;
+                document.getElementById('status-message').textContent = "ERROR: Could not book appointment."
             }
         } catch (error) {
             document.getElementById('response').innerText = 'An error occurred. Please try again.';

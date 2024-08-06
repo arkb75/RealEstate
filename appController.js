@@ -244,6 +244,24 @@ router.get('/appointments', async (req, res) => {
     }
 });
 
+router.post('/book-appointment', async (req, res) => {
+    const listingID = currReq.query.lid;
+    const address = currReq.query.address;
+    const postalCode = currReq.query.postalCode;
+    const loggedUser = appService.getLoggedUser();
+    const buyerEmail = loggedUser[1];
+    const appDate = req.body.date;
+    const appTime = req.body.time;
+    const appMeetingPlace = req.body.meetingPlace;
+    const result = await appService.bookAppointment(appDate, appTime, appMeetingPlace, buyerEmail, listingID, address, postalCode);
+
+    if (result) {
+        res.json({success: true});
+    } else {
+        res.status(500).json({success: false});
+    }
+})
+
 router.post('/update-appointment-status', async (req, res) => {
     const { appointmentID, status } = req.body;
     try {

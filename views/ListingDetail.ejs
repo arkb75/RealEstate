@@ -62,6 +62,7 @@
 
     <% if (user[3] === 'buyer') { %>
         <button onclick="window.location.href='CreateOffer.html'">Create Offer</button>
+        <button onclick="window.location.href='AppointmentForm.html'">Book Appointment</button>
     <% } else if (user[3] === 'seller') { %>
         <button id="deleteButton"
                 data-p-code="<%= property[8] %>"

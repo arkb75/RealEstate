@@ -64,7 +64,7 @@ async function fetchAndDisplayListings(minPrice, maxPrice, minBed, minBath, prop
         listingContainer.className = 'listing-container';
         const id = document.createElement('h3');
         const listingID = listing[0];
-        id.textContent = listingID;
+        id.textContent = "ListingID: " + listingID;
         const addrElt = document.createElement('h3');
         const addr = listing[1];
         addrElt.textContent = addr + ", " + listing[2] + ", " + listing[3];
