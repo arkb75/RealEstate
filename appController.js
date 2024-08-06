@@ -12,8 +12,7 @@ router.get('/check-db-connection', async (req, res) => {
         res.send('connected');
     } else {
         res.send('unable to connect');
-    }
-});
+    }});
 
 router.get('/getLoggedUser', async (req, res) => {
     const loggedUser = await appService.getLoggedUser();
@@ -34,12 +33,11 @@ router.get('/ListingDetail', async (req, res) => {
 
     const propertyDetails = await appService.getPropertyDetails(listingId, addr, pc);
     const loggedUser = await appService.getLoggedUser();
-    // const getAmenities = await appService.getAmenities(addr, pc);
-    // console.log(getAmenities);
-    console.log(propertyDetails);
+    const propAmenities = await appService.getAmenities(addr, pc);
     res.render('ListingDetail', {
         property: propertyDetails,
-        user: loggedUser});
+        user: loggedUser,
+        amenities: propAmenities});
 });
 
 router.delete('/delete-listing', async (req, res) => {
@@ -199,24 +197,7 @@ router.get('/listings', async (req, res) => {
     res.json({data: tableContent});
 });
 
-router.post("/initiate-demotable", async (req, res) => {
-    const initiateResult = await appService.initiateDemotable();
-    if (initiateResult) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ success: false });
-    }
-});
 
-router.post("/insert-demotable", async (req, res) => {
-    const { id, name } = req.body;
-    const insertResult = await appService.insertDemotable(id, name);
-    if (insertResult) {
-        res.json({ success: true });
-    } else {
-        res.status(500).json({ success: false });
-    }
-});
 
 
 router.post('/insert-listing', async (req, res) => {
@@ -229,30 +210,17 @@ router.post('/insert-listing', async (req, res) => {
     }
 })
 
-router.post("/update-name-demotable", async (req, res) => {
-    const { oldName, newName } = req.body;
-    const updateResult = await appService.updateNameDemotable(oldName, newName);
-    if (updateResult) {
+router.post('/update-listing', async (req, res) => {
+    const {addr, pCode, lid, price, nBeds, nBaths, yBuilt, space, ySpace, hGarage, hFloors, basement, tGarage, tFloors, tFee, cFee, cNum, aNum, pType} = req.body;
+    const listingUpdateResult = await appService.updatePropertyDetails(addr, pCode, lid, price, nBeds, nBaths, yBuilt, space, ySpace, hGarage, hFloors, basement, tGarage, tFloors, tFee, cFee, cNum, aNum, pType);
+    if (listingUpdateResult) {
         res.json({ success: true });
     } else {
         res.status(500).json({ success: false });
     }
-});
+})
 
-router.get('/count-demotable', async (req, res) => {
-    const tableCount = await appService.countDemotable();
-    if (tableCount >= 0) {
-        res.json({ 
-            success: true,  
-            count: tableCount
-        });
-    } else {
-        res.status(500).json({ 
-            success: false, 
-            count: tableCount
-        });
-    }
-});
+
 
 router.post('/appointments', async (req, res) => {
     const { date, time, meetingPlace } = req.body;

@@ -76,7 +76,6 @@ async function testOracleConnection() {
     });
 }
 
-// TODO: handle property types too!!!!
 async function fetchListingsFromDb(minPrice, maxPrice, minBed, minBath, propType, minSpace, maxSpace, minYear) {
     return await withOracleDB(async (connection) => {
         if (loggedUser[3] === 'seller') {
@@ -319,45 +318,12 @@ async function getPropertyDetails(listingId, addr, pc) {
         const result = PI.concat(additionalInfo);
         return result;
     }).catch(() => {
-        console.log("uh oh stinky");
+        console.log("ERROR: Could not get property details");
         return [];
     });
 }
 
 
-async function initiateDemotable() {
-    return await withOracleDB(async (connection) => {
-        try {
-            await connection.execute(`DROP TABLE DEMOTABLE`);
-        } catch(err) {
-            console.log('Table might not exist, proceeding to create...');
-        }
-
-        const result = await connection.execute(`
-            CREATE TABLE DEMOTABLE (
-                id NUMBER PRIMARY KEY,
-                name VARCHAR2(20)
-            )
-        `);
-        return true;
-    }).catch(() => {
-        return false;
-    });
-}
-
-async function insertDemotable(id, name) {
-    return await withOracleDB(async (connection) => {
-        const result = await connection.execute(
-            `INSERT INTO DEMOTABLE (id, name) VALUES (:id, :name)`,
-            [id, name],
-            { autoCommit: true }
-        );
-
-        return result.rowsAffected && result.rowsAffected > 0;
-    }).catch(() => {
-        return false;
-    });
-}
 
 async function insertListing(addr, pCode, city, prov, price, propType, propCond, nBeds, nBaths, yBuilt, space, ySpace, hGarage, hFloors, basement, tGarage, tFloors, tFee, cFee, cNum, aNum) {
     return await withOracleDB(async (connection) => {
@@ -452,28 +418,7 @@ function getDate(addThirty) {
 }
 
 
-async function updateNameDemotable(oldName, newName) {
-    return await withOracleDB(async (connection) => {
-        const result = await connection.execute(
-            `UPDATE DEMOTABLE SET name=:newName where name=:oldName`,
-            [newName, oldName],
-            { autoCommit: true }
-        );
 
-        return result.rowsAffected && result.rowsAffected > 0;
-    }).catch(() => {
-        return false;
-    });
-}
-
-async function countDemotable() {
-    return await withOracleDB(async (connection) => {
-        const result = await connection.execute('SELECT Count(*) FROM DEMOTABLE');
-        return result.rows[0][0];
-    }).catch(() => {
-        return -1;
-    });
-}
 async function authenticateUser(email, password) {
     return await withOracleDB(async (connection) => {
         const query = 'SELECT * FROM USERS WHERE EMAIL = :email';
@@ -654,16 +599,73 @@ async function deleteListing(address, postalCode) {
     })
 }
 
+async function updatePropertyDetails(addr, pCode, lid, price, nBeds, nBaths, yBuilt, space, ySpace, hGarage, hFloors, basement, tGarage, tFloors, tFee, cFee, cNum, aNum, pType) {
+    return await withOracleDB(async (connection) => {
+        const listingPriceUpdate = await connection.execute(
+            `UPDATE Listings SET ListingPrice=:price where ListingID=:lid AND Address=:addr AND PostalCode=:pCode`,
+            [price, lid, addr, pCode],
+            { autoCommit: true }
+        );
+
+        const propertyDetailsUpdate = await connection.execute(
+            `UPDATE Properties SET NumBaths=:nBaths, NumBeds=:nBeds, YearBuilt=:yBuilt, InteriorSpace=:space
+                  WHERE Address=:addr AND PostalCode=:pCode`,
+            [nBaths, nBeds, yBuilt, space, addr, pCode],
+            { autoCommit: true }
+        );
+
+        let typeUpdate;
+
+        switch (pType) {
+            case 'House':
+                typeUpdate = await connection.execute(
+                    `UPDATE HOUSES SET YardSize=:ySpace, NumGarage=:hGarage, NumFloors=:hFloors, HasBasement=:basement
+                  WHERE Address=:addr AND PostalCode=:pCode`,
+                    [ySpace, hGarage, hFloors, basement, addr, pCode],
+                    { autoCommit: true }
+                );
+                break;
+            case 'Townhouse':
+                typeUpdate = await connection.execute(
+                    `UPDATE TOWNHOUSES SET NumGarage=:tGarage, NumFloors=:tFloors, HOAFee=:tFee
+                  WHERE Address=:addr AND PostalCode=:pCode`,
+                    [tGarage, tFloors, tFee, addr, pCode],
+                    { autoCommit: true }
+                );
+                break;
+            case 'Condo':
+                typeUpdate = await connection.execute(
+                    `UPDATE CONDOS SET HOAFee=:cFee, UnitNumber=:cNum
+                  WHERE Address=:addr AND PostalCode=:pCode`,
+                    [cFee, cNum, addr, pCode],
+                    { autoCommit: true }
+                );
+                break;
+            default:
+                typeUpdate = await connection.execute(
+                    `UPDATE APARTMENTS SET UnitNumber=:aNum
+                  WHERE Address=:addr AND PostalCode=:pCode`,
+                    [aNum, addr, pCode],
+                    { autoCommit: true }
+                );
+                break;
+        }
+
+        return listingPriceUpdate.rowsAffected && listingPriceUpdate.rowsAffected > 0
+            && propertyDetailsUpdate.rowsAffected && propertyDetailsUpdate.rowsAffected > 0
+        && typeUpdate.rowsAffected && typeUpdate.rowsAffected > 0;
+    }).catch(() => {
+        return false;
+    });
+}
+
+
 module.exports = {
     getPropertyDetails,
     testOracleConnection,
     fetchListingsFromDb,
-    initiateDemotable,
-    insertDemotable,
-    updateNameDemotable,
     authenticateUser,
     registerUser,
-    countDemotable,
     createAppointment,
     getLoggedUser,
     getAppointments,
@@ -672,5 +674,7 @@ module.exports = {
     insertListing,
     fetchOffersForListing,
     updateOfferStatus,
-    deleteListing
+    deleteListing,
+    updatePropertyDetails,
+    getAmenities
 };

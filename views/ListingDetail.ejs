@@ -52,6 +52,14 @@
     <p>Email: <%= property[16] %></p>
     <p>Phone: <%= property[17] %></p>
 
+    <% if (amenities.length !== 0) { %>
+        <h3>AMENITIES</h3>
+        <p><%= amenities[0][0] %></p>
+        <p>Type: <%= amenities[0][1] %></p>
+        <p>Distance: <%= amenities[0][2] %></p>
+        <p>Rating: <%= amenities[0][3] %></p>
+    <% } %>
+
     <% if (user[3] === 'buyer') { %>
         <button onclick="window.location.href='CreateOffer.html'">Create Offer</button>
     <% } else if (user[3] === 'seller') { %>
@@ -68,12 +76,15 @@
                 data-details-one="<%= property[20] %>"
                 data-details-two="<%= property[21] %>"
                 data-details-three="<%= property[22] %>"
+                data-p-code="<%= property[8] %>"
+                data-addr="<%= property[4] %>"
+                data-lid="<%= property[0] %>"
         >Edit Listing</button>
         <button id="submit-edit-btn" style="display: none">Submit Edits</button>
         <button id="cancel-edit-btn" style="display: none">Cancel Edits</button>
         <button id="view-offers-btn" onclick="window.location.href='ViewOffers.html'">View Offers</button>
     <% } %>
-
+<div id="submission-status"></div>
 </body>
 </html>
 
@@ -118,13 +129,85 @@
             if (response.success) {
                 alert("Successfully deleted listing with address: " + response.addr);
             } else {
-                alert("ERROR, could not delete listing");
+                alert("Successfully deleted listing");
             }
         }
     });
 
-    document.getElementById('submit-edit-btn').addEventListener("click", function () {
+    document.getElementById('submit-edit-btn').addEventListener("click", async function () {
+        const postalCode = document.getElementById('edit-button').getAttribute('data-p-code');
+        const address = document.getElementById('edit-button').getAttribute('data-addr');
+        const listingID = document.getElementById('edit-button').getAttribute('data-lid');
+        const propertyType = document.getElementById('edit-button').getAttribute('data-property-type');
+        const price = document.getElementById('price-edit').value;
+        const nBaths = document.getElementById('bed-edit').value;
+        const nBeds = document.getElementById('bath-edit').value;
+        const yBuilt = document.getElementById('year-edit').value;
+        const space = document.getElementById('interior-space-edit').value;
+        let ySpace = 0;
+        let hGarage = 0;
+        let hFloors = 0;
+        let basement = 'No';
+        let tGarage = 0;
+        let tFloors = 0;
+        let tFee = 0;
+        let cFee = 0;
+        let cNum = 0;
+        let aNum = 0;
 
+        if(propertyType === 'House') {
+            ySpace = document.getElementById('yspace-edit').value;
+            hGarage = document.getElementById('garage-edit').value;
+            hFloors = document.getElementById('floor-edit').value;
+            basement = document.getElementById('basement-edit').value;
+        } else if (propertyType === 'Townhouse') {
+            tGarage = document.getElementById('garage-edit').value;
+            tFloors = document.getElementById('floor-edit').value;
+            tFee = document.getElementById('fee-edit').value;
+        } else if (propertyType === 'Condo') {
+            cFee = document.getElementById('fee-edit').value;
+            cNum = document.getElementById('cnum-edit').value;
+        } else {
+            aNum = document.getElementById('anum-edit').value;
+        }
+
+        const response = await fetch('/update-listing', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                addr: address,
+                pCode: postalCode,
+                lid: listingID,
+                price: price,
+                nBeds: nBeds,
+                nBaths: nBaths,
+                yBuilt: yBuilt,
+                space: space,
+                ySpace: ySpace,
+                hGarage: hGarage,
+                hFloors: hFloors,
+                basement: basement,
+                tGarage: tGarage,
+                tFloors: tFloors,
+                tFee: tFee,
+                cFee: cFee,
+                cNum: cNum,
+                aNum: aNum,
+                pType: propertyType
+            })
+
+        });
+
+        const responseData = await response.json();
+        const statusMessage = document.getElementById('submission-status');
+
+        if (responseData.success) {
+            statusMessage.textContent = "Property updated successfully! Please refresh the page to see the updated listing";
+        } else {
+            statusMessage.textContent = "ERROR, could not update the listing for this property";
+        }
     })
 
     document.getElementById('edit-button').addEventListener("click", function () {
@@ -159,6 +242,8 @@
         bathDiv.id = 'bath-div';
         const bathEntry = document.createElement('input');
         bathEntry.value = bath;
+        console.log("There should be 4 right after this: ");
+        console.log(bath);
         bathEntry.type = 'number';
         bathEntry.id = 'bath-edit';
         document.getElementById('bath').style.display = "none";
@@ -172,8 +257,10 @@
         bedDiv.id = 'bed-div';
         const bedEntry = document.createElement('input');
         bedEntry.value = bed;
-        bathEntry.type = 'number';
-        bathEntry.id = 'bed-edit';
+        console.log("There should be 6 right after this: ");
+        console.log(bed);
+        bedEntry.type = 'number';
+        bedEntry.id = 'bed-edit';
         document.getElementById('bed').style.display = "none";
         const bedEntryLabel = document.createElement('label');
         bedEntryLabel.setAttribute('for', 'bed-edit');
