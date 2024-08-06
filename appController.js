@@ -222,6 +222,17 @@ router.post('/update-listing', async (req, res) => {
     }
 });
 
+router.get('/industry-insights', async (req, res) => {
+    const insightRows = await appService.propertyTypeInsights();
+    if (insightRows.length !== 0) {
+        res.json({data: insightRows});
+    } else {
+        console.error('Error getting insights for offers');
+        res.status(500).send('An error occurred while fetching insights.');
+    }
+
+})
+
 router.get('/appointments', async (req, res) => {
     try {
         const loggedUser = await appService.getLoggedUser();
@@ -245,6 +256,8 @@ router.get('/appointments', async (req, res) => {
         res.status(500).send('An error occurred while fetching appointments.');
     }
 });
+
+
 
 router.post('/book-appointment', async (req, res) => {
     const listingID = currReq.query.lid;

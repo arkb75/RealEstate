@@ -59,7 +59,6 @@ async function fetchAndDisplayListings(minPrice, maxPrice, minBed, minBath, prop
     }
 
     listingContent.forEach(listing => {
-        console.log(listing);
         const listingContainer = document.createElement('div');
         listingContainer.className = 'listing-container';
         const id = document.createElement('h3');
@@ -137,6 +136,21 @@ function handleFilters() {
      }
  }
 
+ async function fetchInsights() {
+    const response = await fetch('/industry-insights', {
+        method: 'GET'
+    });
+
+     const responseData = await response.json();
+     const insightContent = responseData.data;
+
+     insightContent.forEach(insight => {
+         const insightContent = document.createElement('p');
+         const truncatedAvg = Math.trunc(insight[1]);
+         insightContent.textContent = "Average offer price for " + insight[0] + "s is $" + truncatedAvg;
+         document.getElementById('insight-container').appendChild(insightContent);
+     })
+ }
 
 // ---------------------------------------------------------------
 // Initializes the webpage functionalities.
@@ -145,6 +159,7 @@ window.onload = function() {
     checkDbConnection();
     checkUserType();
     fetchListingData();
+    fetchInsights();
     document.getElementById('filters').style.display = 'none';
     document.getElementById('showFilters').addEventListener("click", toggleFilters);
     document.getElementById('applyFiltersBtn').addEventListener("click", handleFilters);

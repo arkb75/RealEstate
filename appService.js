@@ -598,6 +598,24 @@ async function fetchAppointmentsForUser(email) {
     });
 }
 
+async function propertyTypeInsights() {
+    return await withOracleDB(async (connection) => {
+        const query = `
+            SELECT p.PropertyType, AVG(o.OfferAmount) AS AverageOfferAmount
+            FROM OFFERS o
+            JOIN LISTINGS l ON o.ListingID = l.ListingID
+            JOIN PROPERTIES p ON l.Address = p.Address AND l.PostalCode = p.PostalCode
+            GROUP BY p.PropertyType
+        `;
+        const result = await connection.execute(query);
+        return result.rows;
+    }).catch((error) => {
+        console.error('Error calculating average offer amount per property type:', error);
+        return [];
+    });
+}
+
+
 async function bookAppointment(appDate, appTime, appMeetingPlace, buyerEmail, listingID, address, postalCode) {
     return await withOracleDB(async (connection) => {
         const getMaxAppointmentIdQuery = `SELECT NVL(MAX(AppointmentID), 0) + 1 AS NextListingID FROM APPOINTMENTS`;
@@ -668,5 +686,6 @@ module.exports = {
     updateAppointmentStatus,
     getAmenities,
     bookAppointment,
-    countOffersPerListing
+    countOffersPerListing,
+    propertyTypeInsights
 };

@@ -115,6 +115,13 @@ input, textarea {
     margin-bottom: 10px;
 }
 
+#insight-container {
+    background-color: #A37396;
+    padding: 15px;
+    border-radius: 10px;
+    color: white;
+}
+
 input::placeholder, textarea::placeholder {
     color: #aaa;
 }
