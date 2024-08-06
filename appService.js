@@ -480,40 +480,6 @@ async function registerUser(email, name, phone, userType, realtorID) {
     });
 }
 
-async function createAppointment(date, time, meetingPlace) {
-    // Ensure only buyers can create appointments
-    if (loggedUser[3] !== 'buyer') {
-        return { success: false, message: 'Only buyers can create appointments' };
-    }
-
-    const status = "booked"; // Hardcoded status
-    const buyerEmail = loggedUser[1]; // Assuming email is at index 1
-    const realtorID = loggedUser[4]; // Assuming realtorID is at index 4
-
-    return await withOracleDB(async (connection) => {
-        const insertQuery = `
-            INSERT INTO Appointments (Status, RealtorID, Date, Time, BuyerEmail, MeetingPlace)
-            VALUES (:status, :realtorID, :date, :time, :buyerEmail, :meetingPlace)
-        `;
-
-        const result = await connection.execute(
-            insertQuery,
-            { status, realtorID, date, time, buyerEmail, meetingPlace },
-            { autoCommit: true }
-        );
-
-        if (result.rowsAffected && result.rowsAffected > 0) {
-            return { success: true };
-        } else {
-            throw new Error('Failed to create appointment');
-        }
-    }).catch((error) => {
-        console.error('Error creating appointment:', error);
-        return { success: false, message: 'Failed to create appointment' };
-    });
-}
-
-
 async function getAmenities(addr, pc) {
     return await withOracleDB(async (connection) => {
         const query = `
@@ -531,48 +497,6 @@ async function getAmenities(addr, pc) {
 
 function getLoggedUser() {
     return loggedUser;
-}
-
-
-async function getAppointments() {
-    return await withOracleDB(async (connection) => {
-        let query;
-        let binds = {};
-        if (loggedUser[3] === 'buyer') {
-            query = `
-                SELECT * 
-                FROM Appointments 
-                WHERE BuyerEmail = :buyerEmail
-            `;
-            binds = { buyerEmail: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: loggedUser[1] } };
-        } else if (loggedUser[3] === 'seller') {
-            query = `
-                SELECT * 
-                FROM Appointments 
-                WHERE RealtorID = :realtorID
-            `;
-            binds = { realtorID: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: loggedUser[4] } };
-        }
-
-        const result = await connection.execute(query, binds);
-        return result.rows;
-    });
-}
-
-async function cancelAppointment(appointmentID) {
-    return await withOracleDB(async (connection) => {
-        const result = await connection.execute(
-            `DELETE FROM Appointments WHERE AppointmentID = :appointmentID`,
-            { appointmentID: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: appointmentID } },
-            { autoCommit: true }
-        );
-
-        if (result.rowsAffected && result.rowsAffected > 0) {
-            return { success: true };
-        } else {
-            return { success: false, message: 'Failed to cancel appointment' };
-        }
-    });
 }
 
 async function deleteListing(address, postalCode) {
@@ -659,6 +583,41 @@ async function updatePropertyDetails(addr, pCode, lid, price, nBeds, nBaths, yBu
     });
 }
 
+async function fetchAppointmentsForUser(email) {
+    return await withOracleDB(async (connection) => {
+        const query = `
+            SELECT *
+            FROM APPOINTMENTS
+            WHERE BuyerEmail = :email
+        `;
+        const result = await connection.execute(query, {
+            email: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: email },
+        });
+        return result.rows;
+    }).catch((error) => {
+        console.error('Error fetching appointments:', error);
+        return [];
+    });
+}
+
+async function updateAppointmentStatus(appointmentID, status) {
+    return await withOracleDB(async (connection) => {
+        const query = `
+            UPDATE APPOINTMENTS
+            SET AppointmentStatus = :status
+            WHERE AppointmentID = :appointmentID
+        `;
+        const result = await connection.execute(query, {
+            status: { dir: oracledb.BIND_IN, type: oracledb.STRING, val: status },
+            appointmentID: { dir: oracledb.BIND_IN, type: oracledb.NUMBER, val: appointmentID }
+        }, { autoCommit: true });
+
+        return result.rowsAffected && result.rowsAffected > 0;
+    }).catch((error) => {
+        console.error('Error updating appointment status:', error);
+        return false;
+    });
+}
 
 module.exports = {
     getPropertyDetails,
@@ -666,15 +625,14 @@ module.exports = {
     fetchListingsFromDb,
     authenticateUser,
     registerUser,
-    createAppointment,
     getLoggedUser,
-    getAppointments,
-    cancelAppointment,
     createOffer,
     insertListing,
     fetchOffersForListing,
     updateOfferStatus,
     deleteListing,
     updatePropertyDetails,
+    fetchAppointmentsForUser,
+    updateAppointmentStatus,
     getAmenities
 };

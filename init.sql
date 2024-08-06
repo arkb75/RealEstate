@@ -327,10 +327,6 @@ INSERT INTO APPOINTMENTS (AppointmentID, AppointmentDate, AppointmentTime, Meeti
 VALUES
     (6, '2024-08-20', '13:00', '987 Cedar St', 'stevesmith@google.com', 6, '987 Elm St', 'K1P5G1', 'Completed');
 
-
-
-
-
 INSERT INTO OFFERS (OfferID, OfferStatus, OfferDate, OfferExpiryDate, OfferAmount, BuyerEmail, ListingID, Address, PostalCode)
 VALUES (1, 'Pending', '2024-03-01', '2024-03-15', 510000, 'samjane@hotmail.com', 1, '123 Maple St', 'V5K0A1');
 INSERT INTO OFFERS (OfferID, OfferStatus, OfferDate, OfferExpiryDate, OfferAmount, BuyerEmail, ListingID, Address, PostalCode)

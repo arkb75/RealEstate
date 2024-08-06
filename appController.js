@@ -208,7 +208,7 @@ router.post('/insert-listing', async (req, res) => {
     } else {
         res.status(500).json({success: false});
     }
-})
+});
 
 router.post('/update-listing', async (req, res) => {
     const {addr, pCode, lid, price, nBeds, nBaths, yBuilt, space, ySpace, hGarage, hFloors, basement, tGarage, tFloors, tFee, cFee, cNum, aNum, pType} = req.body;
@@ -218,62 +218,44 @@ router.post('/update-listing', async (req, res) => {
     } else {
         res.status(500).json({ success: false });
     }
-})
-
-
-
-router.post('/appointments', async (req, res) => {
-    const { date, time, meetingPlace } = req.body;
-
-    try {
-        const result = await appService.createAppointment(date, time, meetingPlace);
-
-        if (result.success) {
-            res.json({
-                success: true,
-                message: 'Appointment booked successfully'
-            });
-        } else {
-            res.status(400).json({
-                success: false,
-                message: result.message
-            });
-        }
-    } catch (error) {
-        console.error('Appointment booking error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'An error occurred while booking the appointment'
-        });
-    }
 });
 
-
-
-// Fetch appointments based on user type
 router.get('/appointments', async (req, res) => {
     try {
-        const appointments = await appService.getAppointments();
-        res.json({ success: true, appointments });
+        const loggedUser = await appService.getLoggedUser();
+        const appointments = await appService.fetchAppointmentsForUser(loggedUser[1]);
+
+        const appointmentDetails = appointments.map(appointment => ({
+            appointmentID: appointment[0],
+            status: appointment[1],
+            date: appointment[2],
+            time: appointment[3],
+            buyerEmail: appointment[4],
+            meetingPlace: appointment[5],
+            listingID: appointment[6],
+            address: appointment[7],
+            postalCode: appointment[8]
+        }));
+
+        res.json(appointmentDetails);
     } catch (error) {
         console.error('Error fetching appointments:', error);
-        res.status(500).json({ success: false, message: 'Failed to fetch appointments' });
+        res.status(500).send('An error occurred while fetching appointments.');
     }
 });
 
-// Cancel an appointment
-router.post('/cancel-appointment', async (req, res) => {
-    const { appointmentID } = req.body;
+router.post('/update-appointment-status', async (req, res) => {
+    const { appointmentID, status } = req.body;
     try {
-        const result = await appService.cancelAppointment(appointmentID);
-        if (result.success) {
-            res.json({ success: true, message: 'Appointment canceled successfully' });
+        const result = await appService.updateAppointmentStatus(appointmentID, status);
+        if (result) {
+            res.json({ success: true, message: 'Appointment status updated successfully.' });
         } else {
-            res.status(400).json({ success: false, message: result.message });
+            res.status(400).json({ success: false, message: 'Failed to update appointment status.' });
         }
     } catch (error) {
-        console.error('Error canceling appointment:', error);
-        res.status(500).json({ success: false, message: 'Failed to cancel appointment' });
+        console.error('Error updating appointment status:', error);
+        res.status(500).send('An error occurred while updating appointment status.');
     }
 });
 
