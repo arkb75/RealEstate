@@ -187,9 +187,6 @@ VALUES
     (6, 'Daniel White', 'danielwhite@gmail.com', 8901234567, 6, 'Prime Properties');
 
 
-
-
-
 INSERT INTO USERS(Name, Email, Phone, UserType, RealtorID) VALUES ('Rehnoor', 'rehnoorsaini@outlook.com', 4316885656, 'buyer', 1);
 INSERT INTO USERS(Name, Email, Phone, UserType, RealtorID) VALUES ('Sam Jane', 'samjane@hotmail.com', 1234567890, 'seller', 1);
 INSERT INTO USERS(Name, Email, Phone, UserType, RealtorID)  VALUES ('George Washington', 'georgewash@laundry.com', 2234567990, 'buyer', 2);
@@ -284,7 +281,7 @@ VALUES
 
 INSERT INTO LISTINGS (ListingID, Address, PostalCode, ListingStatus, SellerEmail, ListingPrice, ExpirationDate, ListingDate)
 VALUES
-    (1, '123 Maple St', 'V5K0A1', 'Active', 'rehnoorsaini@outlook.com', 550000, '2024-12-31', '2024-01-01');
+    (1, '123 Maple St', 'V5K0A1', 'Active', 'samjane@hotmail.com', 550000, '2024-12-31', '2024-01-01');
 
 INSERT INTO LISTINGS (ListingID, Address, PostalCode, ListingStatus, SellerEmail, ListingPrice, ExpirationDate, ListingDate)
 VALUES
@@ -292,7 +289,7 @@ VALUES
 
 INSERT INTO LISTINGS (ListingID, Address, PostalCode, ListingStatus, SellerEmail, ListingPrice, ExpirationDate, ListingDate)
 VALUES
-    (3, '789 Pine St', 'T2P1B3', 'Active', 'georgewash@laundry.com', 450000, '2024-10-15', '2024-03-10');
+    (3, '789 Pine St', 'T2P1B3', 'Active', 'willsmith@alaadin.com', 450000, '2024-10-15', '2024-03-10');
 
 INSERT INTO LISTINGS (ListingID, Address, PostalCode, ListingStatus, SellerEmail, ListingPrice, ExpirationDate, ListingDate)
 VALUES
@@ -300,7 +297,7 @@ VALUES
 
 INSERT INTO LISTINGS (ListingID, Address, PostalCode, ListingStatus, SellerEmail, ListingPrice, ExpirationDate, ListingDate)
 VALUES
-    (5, '654 Cedar St', 'T5J1B7', 'Pending', 'sundarpichai@gmail.com', 400000, '2024-08-30', '2024-05-25');
+    (5, '654 Cedar St', 'T5J1B7', 'Pending', 'willsmith@alaadin.com', 400000, '2024-08-30', '2024-05-25');
 
 INSERT INTO LISTINGS (ListingID, Address, PostalCode, ListingStatus, SellerEmail, ListingPrice, ExpirationDate, ListingDate)
 VALUES
@@ -328,15 +325,15 @@ VALUES
     (6, '2024-08-20', '13:00', '987 Cedar St', 'stevesmith@google.com', 6, '987 Elm St', 'K1P5G1', 'Completed');
 
 INSERT INTO OFFERS (OfferID, OfferStatus, OfferDate, OfferExpiryDate, OfferAmount, BuyerEmail, ListingID, Address, PostalCode)
-VALUES (1, 'Pending', '2024-03-01', '2024-03-15', 510000, 'samjane@hotmail.com', 1, '123 Maple St', 'V5K0A1');
+VALUES (1, 'Pending', '2024-03-01', '2024-03-15', 510000, 'rehnoorsaini@outlook.com', 1, '123 Maple St', 'V5K0A1');
 INSERT INTO OFFERS (OfferID, OfferStatus, OfferDate, OfferExpiryDate, OfferAmount, BuyerEmail, ListingID, Address, PostalCode)
 VALUES (2, 'Accepted', '2024-04-01', '2024-04-10', 310000, 'georgewash@laundry.com', 2, '456 Oak St', 'M5H2N2');
 INSERT INTO OFFERS (OfferID, OfferStatus, OfferDate, OfferExpiryDate, OfferAmount, BuyerEmail, ListingID, Address, PostalCode)
-VALUES (3, 'Pending', '2024-05-01', '2024-05-15', 460000, 'willsmith@alaadin.com', 3, '789 Pine St', 'T2P1B3');
+VALUES (3, 'Pending', '2024-05-01', '2024-05-15', 460000, 'stevesmith@google.com', 3, '789 Pine St', 'T2P1B3');
 INSERT INTO OFFERS (OfferID, OfferStatus, OfferDate, OfferExpiryDate, OfferAmount, BuyerEmail, ListingID, Address, PostalCode)
 VALUES (4, 'Rejected', '2024-06-01', '2024-06-15', 360000, 'sundarpichai@gmail.com', 4, '321 Birch St', 'H3Z2Y7');
 INSERT INTO OFFERS (OfferID, OfferStatus, OfferDate, OfferExpiryDate, OfferAmount, BuyerEmail, ListingID, Address, PostalCode)
-VALUES (5, 'Pending', '2024-07-01', '2024-07-10', 560000, 'brettlee@rediffmail.com', 5, '654 Cedar St', 'T5J1B7');
+VALUES (5, 'Pending', '2024-07-01', '2024-07-10', 560000, 'georgewash@laundry.com', 5, '654 Cedar St', 'T5J1B7');
 INSERT INTO OFFERS (OfferID, OfferStatus, OfferDate, OfferExpiryDate, OfferAmount, BuyerEmail, ListingID, Address, PostalCode)
 VALUES (6, 'Accepted', '2024-08-01', '2024-08-10', 410000, 'stevesmith@google.com', 6, '987 Elm St', 'K1P5G1');
 
