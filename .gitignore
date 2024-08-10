@@ -4,9 +4,6 @@ node_modules/
 # Logs
 *.log
 
-# dotenv environment variable files
-.env
-
 # IDEs and editors
 .vscode/
 .idea/
